@@ -45,8 +45,8 @@ gradle wrapper --gradle-version 8.11.1      # then commit gradlew, gradlew.bat, 
 ./gradlew :core:test
 ```
 
-Before sharing the repository, choose a license (none is included on purpose) and check the licenses of any model you
-add to `models/`.
+Licensed under the GNU General Public License v3.0; see `LICENSE`. Check the licenses of any model you add to
+`models/` before committing or sharing it.
 
 ## Working with coding agents
 
