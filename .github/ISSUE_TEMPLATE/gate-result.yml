@@ -1,0 +1,25 @@
+name: Gate result
+description: Record measured numbers for a GATE
+labels: ["gate"]
+body:
+  - type: input
+    id: gate
+    attributes:
+      label: GATE ID
+      placeholder: GATE-03
+    validations:
+      required: true
+  - type: textarea
+    id: numbers
+    attributes:
+      label: Raw numbers
+      description: Paste exactly what was measured, with units. Write NOT MEASURED for anything missing.
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup
+      description: Device, Android version, app and tool versions, model file and quantization, recording used.
+    validations:
+      required: true

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        working-directory: tools
+        run: pip install -e ".[dev]"
+      - name: Lint, types, tests
+        working-directory: tools
+        run: |
+          ruff check .
+          ruff format --check .
+          mypy src
+          pytest
+      - name: Agent files are in sync with agents/
+        run: python -m voicetools sync-agents --check
+
+  kotlin-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Skipped until the Gradle wrapper is generated and committed (see README).
+      - uses: actions/setup-java@v4
+        if: ${{ hashFiles('android/gradlew') != '' }}
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        if: ${{ hashFiles('android/gradlew') != '' }}
+      - name: Core tests
+        if: ${{ hashFiles('android/gradlew') != '' }}
+        working-directory: android
+        run: ./gradlew :core:test
+      # Pin third-party actions to commit SHAs before making this repository public.

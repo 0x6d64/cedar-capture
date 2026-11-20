@@ -1,0 +1,24 @@
+name: Work step
+description: Track one STEP from docs/plan/steps.md
+labels: ["step"]
+body:
+  - type: input
+    id: step
+    attributes:
+      label: STEP ID
+      placeholder: STEP-03
+    validations:
+      required: true
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who can do it (from steps.md)
+      multiple: true
+      options: ["A (agent alone)", "S (needs Android SDK/NDK)", "D (needs the Pixel 7)", "H (human decision or action)"]
+  - type: textarea
+    id: exit
+    attributes:
+      label: Exit check
+      description: Copy the exit check from steps.md
+    validations:
+      required: true

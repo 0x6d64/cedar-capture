@@ -1,0 +1,133 @@
+{
+  "description": "Question set for the ground-truth recording. Core set (core=true) is part of the pass criteria in docs/gates.md GATE-09; questions 12 to 16 are the position set, reported but not gating. Types never/hedge/negation are false-yes checks.",
+  "questions": [
+    {
+      "id": 1,
+      "text": "What did I say the cabin costs?",
+      "expected": "840 euros for the week",
+      "type": "fact",
+      "fact": "F01",
+      "core": true
+    },
+    {
+      "id": 2,
+      "text": "Who suggested the route?",
+      "expected": "Ilinca",
+      "type": "fact",
+      "fact": "F02",
+      "core": true
+    },
+    {
+      "id": 3,
+      "text": "What did I decide about the router?",
+      "expected": "Keep the old one",
+      "type": "fact",
+      "fact": "F05",
+      "core": true
+    },
+    {
+      "id": 4,
+      "text": "When is the meeting?",
+      "expected": "Thursday 15:30, not Tuesday",
+      "type": "fact",
+      "fact": "F06",
+      "core": true
+    },
+    {
+      "id": 5,
+      "text": "Did I order the extra memory?",
+      "expected": "No",
+      "type": "negation",
+      "fact": "F07",
+      "core": true
+    },
+    {
+      "id": 6,
+      "text": "Which folder holds the invoices?",
+      "expected": "The green folder",
+      "type": "fact",
+      "fact": "F10",
+      "core": true
+    },
+    {
+      "id": 7,
+      "text": "How long is the drive?",
+      "expected": "12 kilometers, not 120",
+      "type": "fact",
+      "fact": "F08",
+      "core": true
+    },
+    {
+      "id": 8,
+      "text": "Did I decide to switch suppliers?",
+      "expected": "No, only considered it; undecided",
+      "type": "hedge",
+      "fact": "F04",
+      "core": true
+    },
+    {
+      "id": 9,
+      "text": "Did I mention a dentist appointment?",
+      "expected": "No, never said",
+      "type": "never",
+      "fact": null,
+      "core": true
+    },
+    {
+      "id": 10,
+      "text": "What did I say about the rental car?",
+      "expected": "Nothing, never said",
+      "type": "never",
+      "fact": null,
+      "core": true
+    },
+    {
+      "id": 11,
+      "text": "Did I mention the price of a train ticket?",
+      "expected": "No, never said",
+      "type": "never",
+      "fact": null,
+      "core": true
+    },
+    {
+      "id": 12,
+      "text": "What is the warehouse code?",
+      "expected": "K-7",
+      "type": "fact",
+      "fact": "F13",
+      "core": false
+    },
+    {
+      "id": 13,
+      "text": "When does Mara's flight land?",
+      "expected": "21:45",
+      "type": "fact",
+      "fact": "F14",
+      "core": false
+    },
+    {
+      "id": 14,
+      "text": "How many milliamp hours is the battery pack?",
+      "expected": "4,800",
+      "type": "fact",
+      "fact": "F15",
+      "core": false
+    },
+    {
+      "id": 15,
+      "text": "What is the deadline?",
+      "expected": "The 30th",
+      "type": "fact",
+      "fact": "F20",
+      "core": false
+    },
+    {
+      "id": 16,
+      "text": "Did I decide to cancel the trip?",
+      "expected": "No, I only said I might; undecided",
+      "type": "hedge",
+      "fact": "F19",
+      "core": false
+    }
+  ]
+}

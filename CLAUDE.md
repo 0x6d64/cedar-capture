@@ -1,0 +1,11 @@
+@AGENTS.md
+
+# Claude Code notes
+
+- Use plan mode for any change that touches more than one module or any public interface.
+- Role subagents are in `.claude/agents/` (generated from `agents/`; do not edit them). Delegate review to `reviewer`.
+- Slash commands in `.claude/commands/`: `/next-step [STEP-ID]` picks up a work item, `/gate-report GATE-ID` turns
+  pasted measurements into a results log entry without inventing numbers.
+- `.claude/settings.json` denies reading `data/` (personal recordings) and pushing to git. Keep it that way.
+- When unsure whether something is verified, write `UNVERIFIED` and say why. Do not guess library APIs; read the
+  library source or docs in the repo or ask.

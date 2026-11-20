@@ -1,0 +1,312 @@
+{
+  "description": "Planted facts for the ground-truth recording (invented details). A fact is FOUND when every group in 'requires' has at least one alternative present in the normalized transcript. See tools/src/voicetools/facts.py for normalization. Do not edit to make tests pass.",
+  "strict_kinds": [
+    "number",
+    "name",
+    "code",
+    "date",
+    "time",
+    "magnitude"
+  ],
+  "facts": [
+    {
+      "id": "F01",
+      "kind": "number",
+      "description": "Cabin rental costs 840 euros for the week",
+      "position": "early",
+      "requires": [
+        [
+          "840",
+          "eight hundred forty",
+          "eight hundred and forty"
+        ]
+      ]
+    },
+    {
+      "id": "F02",
+      "kind": "name",
+      "description": "A colleague named Ilinca suggested the route",
+      "position": "unspecified",
+      "requires": [
+        [
+          "ilinca",
+          "ilinka"
+        ]
+      ]
+    },
+    {
+      "id": "F03",
+      "kind": "date",
+      "description": "The inspection is on March 14th",
+      "position": "unspecified",
+      "requires": [
+        [
+          "march 14",
+          "14 march",
+          "14th of march",
+          "march 14th",
+          "march fourteenth",
+          "fourteenth of march"
+        ]
+      ]
+    },
+    {
+      "id": "F04",
+      "kind": "hedge",
+      "description": "Maybe switch suppliers (undecided)",
+      "position": "unspecified",
+      "requires": [
+        [
+          "switch suppliers",
+          "switching suppliers",
+          "change suppliers",
+          "switch supplier"
+        ]
+      ]
+    },
+    {
+      "id": "F05",
+      "kind": "decision",
+      "description": "Decided to keep the old router",
+      "position": "unspecified",
+      "requires": [
+        [
+          "keep the old router",
+          "keep our old router",
+          "old router"
+        ]
+      ]
+    },
+    {
+      "id": "F06",
+      "kind": "time",
+      "description": "Meeting is Tuesday, no, Thursday at 15:30 (self-correction; correct value Thursday 15:30)",
+      "position": "unspecified",
+      "requires": [
+        [
+          "thursday"
+        ],
+        [
+          "15:30",
+          "1530",
+          "3:30 pm",
+          "330 pm",
+          "half past three",
+          "fifteen thirty"
+        ]
+      ]
+    },
+    {
+      "id": "F07",
+      "kind": "negation",
+      "description": "Did not order the extra memory",
+      "position": "unspecified",
+      "requires": [
+        [
+          "memory"
+        ],
+        [
+          "did not order",
+          "didnt order",
+          "not order",
+          "havent ordered",
+          "have not ordered",
+          "never ordered"
+        ]
+      ]
+    },
+    {
+      "id": "F08",
+      "kind": "magnitude",
+      "description": "The drive is 12 kilometers, not 120",
+      "position": "unspecified",
+      "requires": [
+        [
+          "12 kilometers",
+          "12 kilometres",
+          "12 km",
+          "twelve kilometers",
+          "twelve kilometres",
+          "twelve km"
+        ]
+      ]
+    },
+    {
+      "id": "F09",
+      "kind": "code",
+      "description": "Ticket number A-4471",
+      "position": "unspecified",
+      "requires": [
+        [
+          "a 4471",
+          "a4471",
+          "a four four seven one",
+          "a forty four seventy one"
+        ]
+      ]
+    },
+    {
+      "id": "F10",
+      "kind": "contrast",
+      "description": "Blue folder holds contracts, green folder holds invoices",
+      "position": "unspecified",
+      "requires": [
+        [
+          "blue"
+        ],
+        [
+          "contracts"
+        ],
+        [
+          "green"
+        ],
+        [
+          "invoices"
+        ]
+      ]
+    },
+    {
+      "id": "F11",
+      "kind": "name",
+      "description": "Dragos will call back on Monday",
+      "position": "unspecified",
+      "requires": [
+        [
+          "dragos"
+        ],
+        [
+          "monday"
+        ]
+      ]
+    },
+    {
+      "id": "F12",
+      "kind": "time",
+      "description": "The shop in Sibiu closes at 18:00",
+      "position": "unspecified",
+      "requires": [
+        [
+          "sibiu"
+        ],
+        [
+          "18:00",
+          "1800",
+          "6 pm",
+          "6pm",
+          "six pm",
+          "six oclock"
+        ]
+      ]
+    },
+    {
+      "id": "F13",
+      "kind": "code",
+      "description": "The warehouse code is K-7",
+      "position": "middle",
+      "requires": [
+        [
+          "k 7",
+          "k7",
+          "kay 7",
+          "kay seven",
+          "k seven"
+        ]
+      ]
+    },
+    {
+      "id": "F14",
+      "kind": "time",
+      "description": "Mara's flight lands at 21:45",
+      "position": "middle",
+      "requires": [
+        [
+          "mara"
+        ],
+        [
+          "21:45",
+          "2145",
+          "9:45 pm",
+          "945 pm",
+          "nine forty five",
+          "quarter to ten"
+        ]
+      ]
+    },
+    {
+      "id": "F15",
+      "kind": "number",
+      "description": "The battery pack is 4,800 milliamp hours",
+      "position": "middle",
+      "requires": [
+        [
+          "4800",
+          "forty eight hundred",
+          "four thousand eight hundred"
+        ]
+      ]
+    },
+    {
+      "id": "F16",
+      "kind": "term",
+      "description": "Technical term: quantization",
+      "position": "unspecified",
+      "requires": [
+        [
+          "quantization",
+          "quantisation"
+        ]
+      ]
+    },
+    {
+      "id": "F17",
+      "kind": "term",
+      "description": "Technical term: foreground service",
+      "position": "unspecified",
+      "requires": [
+        [
+          "foreground service"
+        ]
+      ]
+    },
+    {
+      "id": "F18",
+      "kind": "term",
+      "description": "Technical term: voice activity detection",
+      "position": "unspecified",
+      "requires": [
+        [
+          "voice activity detection"
+        ]
+      ]
+    },
+    {
+      "id": "F19",
+      "kind": "hedge",
+      "description": "Might cancel the trip (undecided)",
+      "position": "unspecified",
+      "requires": [
+        [
+          "cancel the trip",
+          "cancelling the trip",
+          "canceling the trip"
+        ]
+      ]
+    },
+    {
+      "id": "F20",
+      "kind": "date",
+      "description": "The deadline is the 30th",
+      "position": "last",
+      "requires": [
+        [
+          "deadline"
+        ],
+        [
+          "30th",
+          "thirtieth",
+          "the 30"
+        ]
+      ]
+    }
+  ]
+}
