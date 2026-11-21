@@ -57,6 +57,11 @@ body lines. This makes the format reversible: no body line can be mistaken for a
    - A `COMPRESSION-START` without its `COMPRESSION-END` is dropped together with its summary.
    - The dropped text is saved in a side file by the caller; recovery never throws text away.
    - `t` is the time of recovery when the caller knows it, otherwise the latest `t` among the kept entries.
+   - If the kept text already ends with an `INTERRUPTED` entry, nothing is appended, so recovering twice is safe.
+   - Session files are LF-only; writers never produce a carriage return, and recovery does not support CRLF files.
+   - Read the file as bytes and decode UTF-8 leniently (replace bad bytes). A write torn inside a multi-byte character
+     can only fall in the dropped tail, so `kept` is exact. Cut the file at `kept_utf8_bytes` and write the side file
+     from the original bytes after that offset, not from the decoded `dropped_tail`.
    - Limit: a write that was torn exactly after a blank line inside a body cannot be detected. The entry then keeps the
      part that was written.
    Both implementations offer this as a pure text function: `SessionFormat.recover` (Kotlin) and

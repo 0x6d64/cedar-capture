@@ -13,6 +13,7 @@ All notable changes to this project are documented here. Format: Keep a Changelo
 ### Added
 - Session recovery (STEP-03): `SessionFormat.recover` (Kotlin) and `Recovery.from_text` (Python) cut an unfinished
   session file back to its last whole entry and build the `[INTERRUPTED]` marker; spec writing rule 2 now says how.
-  Format stays version 1. New tests, including recovery from every prefix of a valid file, in both languages.
+  Format stays version 1. New tests, including recovery from every prefix of a valid file, in both languages. The new
+  public `core` API (`Recovery`, `recover`) was approved by the human in the STEP-03 to STEP-05 plan (2026-11-21).
 - Role-specific agent definitions in `agents/`, generated for Claude Code and Copilot (`voicetools sync-agents`).
 - Initial repository skeleton: docs, test protocol, session format spec, Kotlin core module, Python tooling, CI.

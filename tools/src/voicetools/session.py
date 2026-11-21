@@ -310,8 +310,10 @@ class Recovery:
     def from_text(cls, text: str, *, t_seconds: int | None = None) -> Recovery:
         cut = _recovery_cut(text)
         kept = text[:cut]
+        entries = ParseResult.from_text(kept).entries
+        if entries and entries[-1].tag == "INTERRUPTED":
+            return cls(kept, text[cut:], "")  # already marked: recovering twice adds nothing
         if t_seconds is None:
-            entries = ParseResult.from_text(kept).entries
             t_seconds = max((entry.t_seconds for entry in entries), default=0)
         return cls(kept, text[cut:], Entry.interrupted(t_seconds=t_seconds).render())
 

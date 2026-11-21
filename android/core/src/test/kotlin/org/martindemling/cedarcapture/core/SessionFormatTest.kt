@@ -206,6 +206,7 @@ class SessionFormatTest {
     @Test
     fun recoveryFromEveryPrefixOfAValidFileIsValid() {
         val text = fixture("valid-basic.session.md")
+        var previousCount = 0
         for (cut in 0..text.length) {
             val prefix = text.substring(0, cut)
             val recovery = SessionFormat.recover(prefix)
@@ -213,6 +214,43 @@ class SessionFormatTest {
             val result = SessionFormat.parse(recovery.kept + recovery.appended)
             assertTrue(result.ok, "cut $cut: ${result.problems}")
             assertTrue(result.entries.last() is InterruptedEntry, "cut $cut")
+            // Cutting must never be more aggressive than needed: whole entries are never lost.
+            assertTrue(result.entries.size >= previousCount, "cut $cut")
+            previousCount = result.entries.size
         }
+        assertEquals(text, SessionFormat.recover(text).kept)
+    }
+
+    @Test
+    fun recoveryDoesNotStackInterruptedMarkers() {
+        val once = SessionFormat.recover(good)
+        val twice = SessionFormat.recover(once.kept + once.appended)
+        assertEquals(once.kept + once.appended, twice.kept)
+        assertEquals("", twice.droppedTail)
+        assertEquals("", twice.appended)
+    }
+
+    @Test
+    fun recoveryDropsAClosedCompressionBlockWithoutItsBlankLine() {
+        val block = openCompression + "summary\n[COMPRESSION-END t=00:01:00]\n"
+        val recovery = SessionFormat.recover(good + block)
+        assertEquals(good, recovery.kept)
+        assertEquals(block, recovery.droppedTail)
+    }
+
+    @Test
+    fun recoveryOfTextWithoutAnyHeaderCutsEverything() {
+        val recovery = SessionFormat.recover("garbage\n")
+        assertEquals("", recovery.kept)
+        assertEquals("garbage\n", recovery.droppedTail)
+    }
+
+    @Test
+    fun recoveryWithATornCharacterInTheTailKeepsTheByteCount() {
+        // A torn UTF-8 write decodes (leniently) to U+FFFD, and only inside the dropped tail.
+        val replacementChar = 0xFFFD.toChar()
+        val recovery = SessionFormat.recover(good + "[SPEECH t=00:00:09]\nGr$replacementChar")
+        assertEquals(good, recovery.kept)
+        assertEquals(good.toByteArray(Charsets.UTF_8).size, recovery.keptUtf8Bytes)
     }
 }

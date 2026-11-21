@@ -194,6 +194,7 @@ def test_recovery_counts_utf8_bytes_not_characters() -> None:
 
 def test_recovery_from_every_prefix_of_a_valid_file_is_valid() -> None:
     text = (FIXTURES / "valid-basic.session.md").read_text(encoding="utf-8")
+    previous_count = 0
     for cut in range(len(text) + 1):
         prefix = text[:cut]
         recovery = Recovery.from_text(prefix)
@@ -201,3 +202,35 @@ def test_recovery_from_every_prefix_of_a_valid_file_is_valid() -> None:
         result = ParseResult.from_text(recovery.kept + recovery.appended)
         assert result.ok, (cut, result.problems)
         assert result.entries[-1].tag == "INTERRUPTED", cut
+        # Cutting must never be more aggressive than needed: whole entries are never lost.
+        assert len(result.entries) >= previous_count, cut
+        previous_count = len(result.entries)
+    assert Recovery.from_text(text).kept == text
+
+
+def test_recovery_does_not_stack_interrupted_markers() -> None:
+    once = Recovery.from_text(GOOD)
+    twice = Recovery.from_text(once.kept + once.appended)
+    assert twice.kept == once.kept + once.appended
+    assert twice.dropped_tail == ""
+    assert twice.appended == ""
+
+
+def test_recovery_drops_a_closed_compression_block_without_its_blank_line() -> None:
+    block = OPEN_COMPRESSION + "summary\n[COMPRESSION-END t=00:01:00]\n"
+    recovery = Recovery.from_text(GOOD + block)
+    assert recovery.kept == GOOD
+    assert recovery.dropped_tail == block
+
+
+def test_recovery_of_text_without_any_header_cuts_everything() -> None:
+    recovery = Recovery.from_text("garbage\n")
+    assert (recovery.kept, recovery.dropped_tail) == ("", "garbage\n")
+
+
+def test_recovery_with_a_torn_character_in_the_tail_keeps_the_byte_count() -> None:
+    # A torn UTF-8 write decodes (errors="replace") to U+FFFD, only inside the dropped tail.
+    replacement_char = chr(0xFFFD)
+    recovery = Recovery.from_text(GOOD + "[SPEECH t=00:00:09]\nGr" + replacement_char)
+    assert recovery.kept == GOOD
+    assert recovery.kept_utf8_bytes == len(GOOD.encode("utf-8"))

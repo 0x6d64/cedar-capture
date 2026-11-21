@@ -71,13 +71,17 @@ object SessionFormat {
 
     /**
      * Repairs an unfinished session file (writing rule 2 in the spec): keeps only whole entries, returns the cut-off
-     * tail so the caller can save it, and builds the `[INTERRUPTED ...]` entry to append. [tSeconds] defaults to the
-     * latest time among the kept entries. Mirrors tools/src/voicetools/session.py (`Recovery.from_text`).
+     * tail so the caller can save it, and builds the `[INTERRUPTED ...]` entry to append (nothing is appended when the
+     * kept text already ends with one). [tSeconds] defaults to the latest time among the kept entries. Mirrors tools/src/voicetools/session.py (`Recovery.from_text`).
      */
     fun recover(text: String, tSeconds: Long? = null): Recovery {
         val cut = recoveryCut(text)
         val kept = text.substring(0, cut)
-        val time = tSeconds ?: parse(kept).entries.maxOfOrNull { it.tSeconds } ?: 0L
+        val entries = parse(kept).entries
+        if (entries.lastOrNull() is InterruptedEntry) {
+            return Recovery(kept, text.substring(cut), "") // already marked: recovering twice adds nothing
+        }
+        val time = tSeconds ?: entries.maxOfOrNull { it.tSeconds } ?: 0L
         return Recovery(kept, text.substring(cut), render(InterruptedEntry(time)))
     }
 
