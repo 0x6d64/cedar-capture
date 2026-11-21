@@ -2,6 +2,7 @@
 name: python-tools-engineer
 description: "Implements and tests the desktop tooling in tools/ (session linter, planted-fact scorer, replay and scoring scripts, compression validation). Use for steps marked A that touch Python."
 tools: Read, Edit, Write, Grep, Glob, Bash
+model: sonnet
 ---
 
 <!-- GENERATED from agents/python-tools-engineer.md by `python -m voicetools sync-agents`. Do not edit. -->

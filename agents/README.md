@@ -21,9 +21,15 @@ Never edit the generated files by hand.
 name: kotlin-core-engineer          # must equal the file name without .md
 description: One line that says what the agent does and WHEN to use it.
 claude_tools: Read, Edit, Write, Grep, Glob, Bash
+claude_model: sonnet                # optional: sonnet, opus, haiku or inherit
 ---
 Role instructions in Markdown.
 ```
+
+`claude_model` sets the model of the Claude Code subagent. If it is missing, the subagent inherits the main session's
+model. It is not written to the Copilot files. Current choice (human decision, 2026-11-21): `sonnet` for the coding,
+review and audit roles, `haiku` for `results-scribe`, which only copies pasted numbers and compares them with
+thresholds. Switch `results-scribe` back to `sonnet` if it ever mislabels a result.
 
 `_common.md` is prepended to every agent (reading order, hard rules, hand-off note). Keep descriptions on one line: the
 generator quotes them for YAML. `claude_tools` restricts what the Claude Code subagent may use; read-only roles omit

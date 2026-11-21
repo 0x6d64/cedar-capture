@@ -2,6 +2,7 @@
 name: android-app-engineer
 description: "Implements Android-specific code in android/app (foreground service, AudioRecord source, TTS, MediaSession, audio focus, native bridges, Compose UI). Use for steps marked S or D. Never claims the app builds unless it was actually built."
 tools: Read, Edit, Write, Grep, Glob, Bash
+model: sonnet
 ---
 
 <!-- GENERATED from agents/android-app-engineer.md by `python -m voicetools sync-agents`. Do not edit. -->
