@@ -238,13 +238,14 @@ Ratings are my judgment, not measurements.
 5. Whether streaming answers stay out of the POC.
 6. The minimum Android version, after reading your phone’s version.
 7. Whether retrieval-only answers become a planned feature instead of only a fallback.
-8. **CI: plan it, or drop the claim that it runs?** `.github/workflows/ci.yml` exists, but no `REQ-*`, `GATE-*` or
-   `STEP-*` covers it, it has never run, and nothing in this plan schedules it. It also cannot run as written: it
-   triggers on pushes to `main`, while the default branch is `master`, and its four actions are pinned to tags rather
-   than commit SHAs (the file itself carries a TODO to pin them before the repository goes public). `AGENTS.md` and
-   `agents/README.md` both state that "CI runs the check", which is currently false. Either add a step at the end of
-   `docs/plan/steps.md` and fix the workflow, or remove those claims. Human decision; nothing is recorded either way
-   yet.
+8. **CI: plan it, or drop the claim that it runs?** DECIDED (human, 2026-11-21): plan it. CI is enabled around review
+   checkpoint 1, with STEP-40 (python and Kotlin `core` jobs; no Android SDK needed). The `:app:assembleDebug` job
+   follows in STEP-41, once M1 work is underway. Anything measured on the phone stays manual and never depends on CI.
+   Until STEP-40 is done, CI has never run: `AGENTS.md` and `agents/README.md` say "CI runs the check", which is true
+   only from then on. Until CI exists, branches are merged locally with merge commits (no pull requests); pull
+   requests become relevant once STEP-40 is done and there are more tests. State at the time of the decision: the
+   workflow trigger was aligned to the default branch `master` (it said `main`); its four actions are still pinned to
+   tags rather than commit SHAs (a TODO in the file), which STEP-40 resolves.
 
 ## 13. Assumptions and unknowns
 

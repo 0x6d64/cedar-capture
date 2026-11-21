@@ -30,7 +30,7 @@ pip install -e ".[dev]"
 ruff check . && ruff format --check . && mypy src && pytest
 ```
 
-Agent definitions (from the repository root; CI runs the check):
+Agent definitions (from the repository root; CI runs the check once STEP-40 is done):
 
 ```bash
 python -m voicetools sync-agents --check   # use without --check to regenerate

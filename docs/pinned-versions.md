@@ -100,5 +100,5 @@ stripped because no usable NDK toolchain was found.
    `RECORD_AUDIO`, STEP-06); **Stop** is unexercised; no audio, transcript or session file exists in this build.
 2. Whether AGP 9.5 accepts this NDK once native code arrives (STEP-11). The current r30 folder is incomplete; repair it
    or install the AGP default 28.2.13676358.
-3. Whether the CI workflow runs at all (it has never executed, and it triggers on `main` while the default branch is
-   `master`; see open decision 8 in `docs/plan/project-plan.md`).
+3. Whether the CI workflow runs at all (it has never executed; its trigger now names the default branch `master`; it
+   is enabled by STEP-40, see open decision 8 in `docs/plan/project-plan.md`).
