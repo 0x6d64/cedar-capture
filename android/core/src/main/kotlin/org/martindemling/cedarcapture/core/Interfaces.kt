@@ -29,6 +29,12 @@ sealed interface VadEvent {
 
 interface VoiceActivityDetector {
     fun accept(frame: ShortArray): VadEvent
+
+    /**
+     * Ends the speech segment in progress, if any, and resets the detector. Call it when the source ends or capture
+     * stops, so that the last words are not lost. Returns null when no speech is in progress.
+     */
+    fun flush(): AudioSegment?
 }
 
 interface SpeechRecognizer {
