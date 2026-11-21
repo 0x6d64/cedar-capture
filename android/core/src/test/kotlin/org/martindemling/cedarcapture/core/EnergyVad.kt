@@ -14,6 +14,7 @@ class EnergyVad(
     private val sampleRate: Int = TestWav.RATE,
 ) : VoiceActivityDetector {
     private var frameIndex = 0L
+    private var frameSize = TestWav.FRAME // taken from the first frame
     private var startFrame = -1L
     private var speechFrames = 0
     private var quietFrames = 0
@@ -21,6 +22,7 @@ class EnergyVad(
     private var lastSpeechEnd = 0 // sample count up to and including the last speech frame
 
     override fun accept(frame: ShortArray): VadEvent {
+        if (frameIndex == 0L) frameSize = frame.size
         val index = frameIndex++
         val loud = rms(frame) >= threshold
         if (startFrame < 0) {
@@ -54,7 +56,7 @@ class EnergyVad(
     /** Ends the segment in progress and resets. Returns null when it was too short. */
     private fun finish(): AudioSegment? {
         val segment = if (speechFrames >= minSpeechFrames) {
-            AudioSegment(startFrame * TestWav.FRAME.toDouble() / sampleRate, samples.take(lastSpeechEnd).toShortArray())
+            AudioSegment(startFrame * frameSize.toDouble() / sampleRate, samples.take(lastSpeechEnd).toShortArray())
         } else {
             null
         }

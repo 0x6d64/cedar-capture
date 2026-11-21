@@ -44,6 +44,7 @@ object TestWav {
         extraChunkBeforeData: ByteArray? = null,
         includeData: Boolean = true,
         trailingByte: Boolean = false,
+        declaredDataSize: Int? = null, // what the header claims; -1 is 0xFFFFFFFF (streamed files)
     ): ByteArray {
         val data = ByteArrayOutputStream()
         for (s in samples) {
@@ -69,7 +70,7 @@ object TestWav {
         }
         if (includeData) {
             body.write("data".toByteArray(Charsets.US_ASCII))
-            body.write(le32(data.size()))
+            body.write(le32(declaredDataSize ?: data.size()))
             body.write(data.toByteArray())
         }
         val file = ByteArrayOutputStream()

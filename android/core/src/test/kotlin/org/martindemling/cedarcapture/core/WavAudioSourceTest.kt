@@ -75,28 +75,75 @@ class WavAudioSourceTest {
     @Test
     fun rejectsFilesThatAreNot16kMonoPcm16() {
         val samples = ShortArray(10)
-        val bad = mapOf(
-            "8 kHz" to TestWav.bytes(samples, sampleRate = 8000),
-            "stereo" to TestWav.bytes(samples, channels = 2),
-            "8-bit" to TestWav.bytes(samples, bitsPerSample = 8),
-            "float" to TestWav.bytes(samples, format = 3),
-            "no data chunk" to TestWav.bytes(samples, includeData = false),
-            "not a WAV" to "hello world, this is not a wav file".toByteArray(),
-            "too short" to ByteArray(5),
+        val bad = listOf(
+            Triple("8 kHz", TestWav.bytes(samples, sampleRate = 8000), "must be 16000 Hz, found 8000 Hz"),
+            Triple("stereo", TestWav.bytes(samples, channels = 2), "must be mono, found 2 channels"),
+            Triple("8-bit", TestWav.bytes(samples, bitsPerSample = 8), "must be 16-bit, found 8-bit"),
+            Triple("float", TestWav.bytes(samples, format = 3), "is not PCM (format code 3)"),
+            Triple("extensible", TestWav.bytes(samples, format = 0xFFFE), "WAVE_FORMAT_EXTENSIBLE is not supported"),
+            Triple("no data chunk", TestWav.bytes(samples, includeData = false), "has no data chunk"),
+            Triple("not a WAV", "hello world, this is not a wav file".toByteArray(), "no RIFF/WAVE header"),
+            Triple("too short", ByteArray(5), "too short"),
         )
-        for ((name, bytes) in bad) {
+        for ((name, bytes, message) in bad) {
             val failure = assertFailsWith<IllegalArgumentException>(name) { source(bytes).start() }
-            assertTrue(failure.message.orEmpty().isNotBlank(), name)
+            assertTrue(message in failure.message.orEmpty(), "$name: ${failure.message}")
         }
     }
 
     @Test
-    fun readingBeforeStartOrAfterStopFails() {
-        val source = source(TestWav.bytes(ShortArray(10)))
-        assertFailsWith<IllegalStateException> { source.read(ShortArray(4)) }
+    fun readingBeforeStartFails() {
+        assertFailsWith<IllegalStateException> { source(TestWav.bytes(ShortArray(10))).read(ShortArray(4)) }
+    }
+
+    @Test
+    fun stopEndsTheStreamAndIsSafeToRepeatOrCallEarly() {
+        val early = source(TestWav.bytes(ShortArray(10)))
+        early.stop() // before start
+        early.stop() // twice
+        assertFailsWith<IllegalStateException> { early.start() }
+
+        val running = source(TestWav.bytes(ShortArray(2000)))
+        running.start()
+        assertEquals(512, running.read(ShortArray(512)))
+        running.stop()
+        assertEquals(-1, running.read(ShortArray(512)), "after stop() the stream ends like a finished file")
+        running.stop()
+    }
+
+    @Test
+    fun readKeepsReturningMinusOneAtTheEnd() {
+        val source = source(TestWav.bytes(ShortArray(3)))
         source.start()
-        source.stop()
-        assertFailsWith<IllegalStateException> { source.read(ShortArray(4)) }
+        assertEquals(3, source.read(ShortArray(512)))
+        repeat(3) { assertEquals(-1, source.read(ShortArray(512))) }
+    }
+
+    @Test
+    fun aDataSizeLargerThanTheFileIsReadToTheEnd() {
+        val samples = ShortArray(700) { it.toShort() }
+        for (declared in listOf(-1, samples.size * 2 + 1000)) { // 0xFFFFFFFF as written by streaming recorders, and too big
+            val source = source(TestWav.bytes(samples, declaredDataSize = declared))
+            source.start()
+            assertContentEquals(samples, readAll(source).flatMap { it.toList() }.toShortArray(), "declared $declared")
+        }
+    }
+
+    @Test
+    fun aStreamThatEndsInTheMiddleOfASampleDropsTheHalfSample() {
+        val samples = ShortArray(5) { (it + 1).toShort() }
+        val source = source(TestWav.bytes(samples, trailingByte = true, declaredDataSize = -1))
+        source.start()
+        assertContentEquals(samples, readAll(source).flatMap { it.toList() }.toShortArray())
+    }
+
+    @Test
+    fun anUnknownChunkLargerThanTheFileIsATruncationError() {
+        val failure = assertFailsWith<IllegalArgumentException> {
+            // The LIST chunk claims 100 bytes, but the file ends 8 bytes into its body.
+            source(TestWav.bytes(ShortArray(4), extraChunkBeforeData = ByteArray(100)).copyOf(60)).start()
+        }
+        assertTrue("truncated" in failure.message.orEmpty(), failure.message)
     }
 
     @Test
@@ -168,6 +215,16 @@ class WavAudioSourceTest {
         for ((length, expected) in lengths.zip(listOf(1.0, 0.5, 0.8))) {
             assertTrue(kotlin.math.abs(length - expected) <= 2 * frameSeconds, "$length vs $expected")
         }
-        assertEquals(FakeRecognizer.text(segments[0].startSeconds), FakeRecognizer().transcribe(segments[0]).text)
+        assertEquals("speech at 1.0 s", FakeRecognizer().transcribe(segments[0]).text)
+    }
+
+    @Test
+    fun theFakeVadFlushesNothingWhenIdleAndDropsSpeechThatIsTooShort() {
+        val vad = EnergyVad(minSpeechFrames = 3)
+        assertNull(vad.flush())
+        val loud = ShortArray(512) { 8000 }
+        assertEquals(VadEvent.SpeechStarted, vad.accept(loud))
+        assertNull(vad.flush(), "one loud frame is shorter than minSpeechFrames")
+        assertNull(vad.flush())
     }
 }

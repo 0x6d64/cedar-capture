@@ -30,8 +30,10 @@ object SystemPacingClock : PacingClock {
 /**
  * Replays a WAV file as an [AudioSource] (DEC-30, STEP-04). Accepts only 16 kHz mono 16-bit PCM, the format the whole
  * pipeline uses; anything else is rejected by [start] with an [IllegalArgumentException] that says why. Unknown chunks
- * before `data` are skipped. A data chunk longer than the file is read until the end of the stream. Owns [input] and
- * closes it in [stop]. Pure JVM, no Android imports.
+ * before `data` are skipped. A data chunk longer than the file is read until the end of the stream. WAVE_FORMAT_EXTENSIBLE
+ * files are rejected even when they hold 16 kHz mono PCM16 (a proof-of-concept limit). Owns [input] and closes it in
+ * [stop]; call [stop] even when [start] threw. [Pacing.REAL_TIME] sleeps inside [read], so an interrupt surfaces as
+ * `InterruptedException`. The frame size is the size of the buffer passed to [read]. Pure JVM, no Android imports.
  */
 class WavAudioSource(
     private val input: InputStream,
@@ -40,13 +42,15 @@ class WavAudioSource(
 ) : AudioSource {
     override val sampleRate: Int = SAMPLE_RATE
 
-    private var started = false
-    private var stopped = false
+    @Volatile private var started = false
+
+    @Volatile private var stopped = false
     private var dataBytesLeft = 0L
     private var startedAtNanos = 0L
     private var samplesDelivered = 0L
 
     override fun start() {
+        check(!stopped) { "already stopped" }
         check(!started) { "already started" }
         parseHeader()
         started = true
@@ -54,11 +58,17 @@ class WavAudioSource(
     }
 
     override fun read(buffer: ShortArray): Int {
-        check(started && !stopped) { "the source is not running" }
-        if (buffer.isEmpty() || dataBytesLeft <= 0L) return if (buffer.isEmpty()) 0 else -1
+        check(started) { "the source is not started" }
+        if (stopped || dataBytesLeft <= 0L) return -1 // stop() ends the stream like the end of the file
+        if (buffer.isEmpty()) return 0
         val wanted = minOf(buffer.size * 2L, dataBytesLeft).toInt()
         val bytes = ByteArray(wanted)
-        val got = readUpTo(bytes)
+        val got = try {
+            readUpTo(bytes)
+        } catch (e: java.io.IOException) {
+            if (stopped) return -1 // stop() closed the stream while this read was blocked
+            throw e
+        }
         if (got < 2) {
             dataBytesLeft = 0
             return -1
@@ -77,6 +87,7 @@ class WavAudioSource(
         return count
     }
 
+    /** Safe to call from another thread, before [start], and more than once. A blocked or later [read] returns -1. */
     override fun stop() {
         stopped = true
         input.close()
@@ -115,6 +126,7 @@ class WavAudioSource(
         val channels = u16(fmt, 2)
         val rate = u32(fmt, 4)
         val bits = u16(fmt, 14)
+        require(format != EXTENSIBLE) { "WAVE_FORMAT_EXTENSIBLE is not supported; re-export the file as plain PCM" }
         require(format == PCM) { "WAV is not PCM (format code $format)" }
         require(channels == 1) { "WAV must be mono, found $channels channels" }
         require(rate == SAMPLE_RATE.toLong()) { "WAV must be $SAMPLE_RATE Hz, found $rate Hz" }
@@ -153,6 +165,7 @@ class WavAudioSource(
         const val SAMPLE_RATE = 16000
         const val BITS = 16
         const val PCM = 1
+        const val EXTENSIBLE = 0xFFFE
         const val FMT_BYTES = 16
         const val RIFF_HEADER_BYTES = 12
         const val CHUNK_HEADER_BYTES = 8
