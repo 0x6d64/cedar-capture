@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-    namespace = "org.example.voicecapture" // placeholder: rename once, in one commit
+    namespace = "org.martindemling.cedarcapture" // renamed from org.example.voicecapture
     // Compose 1.12+ requires compileSdk 37 (docs/pinned-versions.md); API 37 is installed on the build machine.
     compileSdk = 37
     // Pinned to the installed NDK. AGP 9.5 defaults to 28.2.13676358, which is NOT installed here.
     ndkVersion = "30.0.16248370"
 
     defaultConfig {
-        applicationId = "org.example.voicecapture"
+        applicationId = "org.martindemling.cedarcapture" // renamed from org.example.voicecapture
         minSdk = 33 // placeholder: revisit after GATE-01 (Android version of the Pixel 7)
         targetSdk = 36
         versionCode = 1

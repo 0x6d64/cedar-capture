@@ -56,7 +56,7 @@ cd ../android
 # on Windows use "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe")
 adb devices -l
 adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell monkey -p org.example.voicecapture -c android.intent.category.LAUNCHER 1
+adb shell monkey -p org.martindemling.cedarcapture -c android.intent.category.LAUNCHER 1
 ```
 
 Licensed under the GNU General Public License v3.0; see `LICENSE`. Check the licenses of any model you add to

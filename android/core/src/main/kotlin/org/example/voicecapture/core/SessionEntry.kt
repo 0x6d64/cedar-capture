@@ -1,4 +1,4 @@
-package org.example.voicecapture.core
+package de.martindemling.cedarcapture.core
 
 /** One entry of a session file. Specification: docs/session-format.md (REQ-SES-01, REQ-SES-03). */
 sealed interface SessionEntry {

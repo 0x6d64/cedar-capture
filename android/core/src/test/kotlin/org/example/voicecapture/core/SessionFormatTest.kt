@@ -1,4 +1,4 @@
-package org.example.voicecapture.core
+package de.martindemling.cedarcapture.core
 
 import java.io.File
 import kotlin.test.Test

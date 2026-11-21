@@ -33,8 +33,8 @@ Every measurement goes here, newest first. Agents may draft entries from numbers
 - Raw numbers (with units):
   - `adb devices -l` -> `2C201FDH2005HA device product:panther model:Pixel_7 device:panther transport_id:1`
   - `adb install -r app-debug.apk` -> `Performing Streamed Install` / `Success`
-  - `adb shell monkey -p org.example.voicecapture -c android.intent.category.LAUNCHER 1` -> `Events injected: 1`
-  - `adb shell dumpsys activity activities` -> `topResumedActivity=ActivityRecord{... org.example.voicecapture/.MainActivity ...}`
+  - `adb shell monkey -p org.martindemling.cedarcapture -c android.intent.category.LAUNCHER 1` -> `Events injected: 1`
+  - `adb shell dumpsys activity activities` -> `topResumedActivity=ActivityRecord{... org.martindemling.cedarcapture/.MainActivity ...}`
   - screenshot taken 4 s after launch: renders "Voice Capture - skeleton" with "Start recording" and "Stop" buttons,
     no system dialog, status bar clock 12:25, battery 53%
   - `adb logcat -d --pid 29142` -> Compose starts, `ProfileInstaller: Installing profile`; no warnings or errors

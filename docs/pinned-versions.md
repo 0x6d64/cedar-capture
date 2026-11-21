@@ -40,7 +40,7 @@ on this machine, and the APK was installed and started on the Pixel 7 the same d
 | `./gradlew :app:assembleDebug` | BUILD SUCCESSFUL in 23 s; `app/build/outputs/apk/debug/app-debug.apk`, 29,010,949 bytes |
 | `adb devices -l` (later the same day) | `2C201FDH2005HA device product:panther model:Pixel_7 ...` |
 | `adb install -r app-debug.apk` | `Performing Streamed Install` / `Success` |
-| launch + `dumpsys activity activities` | `topResumedActivity=... org.example.voicecapture/.MainActivity`; screenshot shows "Voice Capture - skeleton" with two buttons; no crash in `adb logcat -b crash` |
+| launch + `dumpsys activity activities` | `topResumedActivity=... org.martindemling.cedarcapture/.MainActivity`; screenshot shows "Voice Capture - skeleton" with two buttons; no crash in `adb logcat -b crash` |
 
 Warnings seen, both benign for now: `[CXX1101]` about the broken NDK install, and `libandroidx.graphics.path.so` not
 stripped because no usable NDK toolchain was found.
