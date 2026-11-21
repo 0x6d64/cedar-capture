@@ -11,6 +11,11 @@ All notable changes to this project are documented here. Format: Keep a Changelo
   Sources, raw numbers and caveats: `docs/pinned-versions.md` and `docs/results/RESULTS-LOG.md`.
 
 ### Added
+- WAV replay `AudioSource` (STEP-04): `WavAudioSource` reads 16 kHz mono PCM16 WAV into the caller's buffer (the pipeline
+  will use 512-sample frames), fast or in real time (`Pacing`, testable through `PacingClock`), and rejects other
+  formats, including WAVE_FORMAT_EXTENSIBLE, with a clear message. `VoiceActivityDetector`
+  gains `flush()` so the last words are not lost when a source ends (public `core` API change approved in the STEP-03
+  to STEP-05 plan). Test fakes `EnergyVad`, `FakeRecognizer` and the in-memory `TestWav` generator.
 - Session recovery (STEP-03): `SessionFormat.recover` (Kotlin) and `Recovery.from_text` (Python) cut an unfinished
   session file back to its last whole entry and build the `[INTERRUPTED]` marker; spec writing rule 2 now says how.
   Format stays version 1. New tests, including recovery from every prefix of a valid file, in both languages. The new
