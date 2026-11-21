@@ -1,12 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    // Kotlin itself comes from AGP 9 built-in Kotlin (no kotlin-android plugin).
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "org.example.voicecapture" // placeholder: rename once, in one commit
-    compileSdk = 36
+    // Compose 1.12+ requires compileSdk 37 (docs/pinned-versions.md); API 37 is installed on the build machine.
+    compileSdk = 37
+    // Pinned to the installed NDK. AGP 9.5 defaults to 28.2.13676358, which is NOT installed here.
+    ndkVersion = "30.0.16248370"
 
     defaultConfig {
         applicationId = "org.example.voicecapture"
@@ -35,9 +38,9 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(17)
-}
+// No kotlin { jvmToolchain(...) } here: with built-in Kotlin the Kotlin jvmTarget defaults to
+// android.compileOptions.targetCompatibility (17), which is the bytecode level we want.
+// android/core still sets jvmToolchain(17) explicitly, because it uses the plain Kotlin/JVM plugin.
 
 dependencies {
     implementation(project(":core"))

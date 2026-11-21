@@ -1,13 +1,15 @@
-# PLACEHOLDER VERSIONS: chosen for plausibility at authoring time and NOT verified or built.
-# STEP-01 starts by checking current stable releases (Kotlin, Android Gradle Plugin, Compose BOM, AndroidX) and
-# bumping these together with the Gradle wrapper version. Compile/target SDK 36 needs a compatible AGP.
+# Verified 2026-11-21 against the sources recorded in docs/pinned-versions.md.
+# Do not bump one value in isolation: AGP, Gradle, KGP and compileSdk constrain each other.
+# The build has NOT been run yet (STEP-01): treat the combination as documented, not proven.
 
 [versions]
-kotlin = "2.1.0"
-agp = "8.9.1"
-composeBom = "2025.02.00"
-coreKtx = "1.15.0"
-activityCompose = "1.10.0"
+# KGP that AGP 9.5.2 itself depends on (its POM lists kotlin-gradle-plugin 2.2.10).
+# AGP 9 supplies Kotlin for Android modules, so this version must match the Compose Compiler plugin.
+kotlin = "2.2.10"
+agp = "9.5.2"
+composeBom = "2026.09.00" # Compose UI 1.12.1; the newest BOM (2026.11.01, UI 1.13.0) demands compileSdk 37.1, and only platform 37.0 is installed
+coreKtx = "1.19.1"
+activityCompose = "1.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -18,6 +20,6 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# No kotlin-android alias: AGP 9 compiles Kotlin itself (built-in Kotlin) and rejects that plugin.
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
