@@ -222,7 +222,8 @@ Ratings are my judgment, not measurements.
 
 ## 11. Working process
 
-1. Keep the project in version control and tag each review checkpoint.
+1. Keep the project in version control. Review checkpoints are not tagged in git (decided by the human, 2026-11-21); a
+   checkpoint is recorded by the human review itself and the step statuses in `docs/plan/steps.md`.
 2. Keep one results log with the gate, date, device, Android version, tool versions, model files and raw numbers.
 3. Pin library, model and tool versions in one text file.
 4. Keep the recordings, the 11 questions and the scoring scripts as a fixed regression set and rerun them after every model or engine change.
