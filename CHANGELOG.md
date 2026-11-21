@@ -15,6 +15,9 @@ All notable changes to this project are documented here. Format: Keep a Changelo
   Sources, raw numbers and caveats: `docs/pinned-versions.md` and `docs/results/RESULTS-LOG.md`.
 
 ### Added
+- Pre-commit hooks (`.pre-commit-config.yaml`, revisions pinned to commit SHAs): file hygiene, ruff check and format,
+  mypy, the `sync-agents --check` drift check, and a block on committing `data/`, `models/` or audio files.
+  `fixtures/` is excluded from the whitespace fixers because it is ground truth.
 - Capture pipeline with fakes (STEP-05): `CapturePipeline` runs source, raw audio, voice detection, a recognition queue
   and the session store, with a `PipelineState` (Idle, Recording, Stopped, Error). Raw audio is written before the
   detector sees a frame, and capture never waits for recognition. A recognizer failure is reported and capture goes on; a
