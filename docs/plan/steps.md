@@ -6,6 +6,18 @@ Status column: update to `done` with the commit hash when the exit check passed.
 Source of detail: the project plan and the detailed technical plan the owner holds; library details marked UNVERIFIED
 must be checked first.
 
+## Changing this plan
+
+- Never renumber or reuse a `STEP-*` ID. A new step gets the next free number at the end of the sequence (after the
+  highest existing ID), even when it belongs in the middle. Place its row where it belongs in the tables and say where
+  it runs ("after STEP-05"). Do not use dotted IDs like `STEP-5.1`.
+- Rows are in working order, not ID order. Refer to steps by ID, never by position.
+- Small edits (wording, exit check, Who) keep the ID. If a step's meaning changes a lot, mark it
+  `superseded by STEP-NN` in the Status column and add a new row. Do not delete rows.
+- New open decisions in `docs/plan/project-plan.md` section 12 get the next number; record a resolution in the same
+  entry with its date and who decided.
+- Changing a threshold in `docs/gates.md` or a success criterion needs a human first (`AGENTS.md`).
+
 ## Preparation
 
 | ID | Step | Who | Exit check | Status |
