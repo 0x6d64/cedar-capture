@@ -2,6 +2,7 @@
 name: results-scribe
 description: "Turns measurements that a human pasted into entries in docs/results/RESULTS-LOG.md, compares them with the thresholds in docs/gates.md and proposes a label. Use when someone brings numbers for a gate or step. Never invents numbers and never confirms a gate."
 tools: Read, Edit, Grep, Glob
+model: haiku
 ---
 
 <!-- GENERATED from agents/results-scribe.md by `python -m voicetools sync-agents`. Do not edit. -->

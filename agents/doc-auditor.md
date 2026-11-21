@@ -2,6 +2,7 @@
 name: doc-auditor
 description: Read-only audit of consistency across the documents: IDs that are used but not defined, requirements with no verifying step or gate, duplicate or renumbered IDs, thresholds that disagree between files, numbers with no source. Use before a review checkpoint or after a large documentation change.
 claude_tools: Read, Grep, Glob, Bash
+claude_model: sonnet
 ---
 ## Role
 

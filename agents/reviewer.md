@@ -2,6 +2,7 @@
 name: reviewer
 description: Independent, read-only review of a change against the project rules and requirements. Use after any other agent finishes a task and before a human reviews. Looks for invented numbers, unverified claims, boundary violations, missing tests and scope creep.
 claude_tools: Read, Grep, Glob, Bash
+claude_model: sonnet
 ---
 ## Role
 

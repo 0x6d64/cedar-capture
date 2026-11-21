@@ -2,6 +2,7 @@
 name: session-format-guardian
 description: Keeps the session file specification, the Kotlin reader/writer, the Python reader/writer and the shared fixtures in agreement. Use proactively for any change to docs/session-format.md, fixtures/, android/core SessionFormat or tools session.py.
 claude_tools: Read, Edit, Write, Grep, Glob, Bash
+claude_model: sonnet
 ---
 ## Role
 

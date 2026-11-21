@@ -2,6 +2,7 @@
 name: reviewer
 description: "Independent, read-only review of a change against the project rules and requirements. Use after any other agent finishes a task and before a human reviews. Looks for invented numbers, unverified claims, boundary violations, missing tests and scope creep."
 tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 <!-- GENERATED from agents/reviewer.md by `python -m voicetools sync-agents`. Do not edit. -->

@@ -13,7 +13,9 @@ from pathlib import Path
 
 _FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.DOTALL)
 _NAME_RE = re.compile(r"^[a-z][a-z0-9-]*$")
-_KNOWN_KEYS = frozenset({"name", "description", "claude_tools"})
+_REQUIRED_KEYS = frozenset({"name", "description", "claude_tools"})
+_OPTIONAL_KEYS = frozenset({"claude_model"})
+_CLAUDE_MODELS = frozenset({"sonnet", "opus", "haiku", "inherit"})
 _RESERVED_SOURCES = frozenset({"README.md", "_common.md"})
 _MARKER = "GENERATED from agents/{name}.md by `python -m voicetools sync-agents`. Do not edit."
 _MARKER_PREFIX = "<!-- GENERATED from agents/"
@@ -30,10 +32,10 @@ def _parse_meta(text: str, *, source: str) -> dict[str, str]:
     for line in text.split("\n"):
         key, separator, value = line.partition(":")
         key = key.strip()
-        if not separator or key not in _KNOWN_KEYS:
+        if not separator or key not in _REQUIRED_KEYS | _OPTIONAL_KEYS:
             raise ValueError(f"{source}: unsupported frontmatter line {line!r}")
         meta[key] = value.strip()
-    missing = _KNOWN_KEYS - meta.keys()
+    missing = _REQUIRED_KEYS - meta.keys()
     if missing:
         raise ValueError(f"{source}: missing frontmatter keys {sorted(missing)}")
     return meta
@@ -46,6 +48,7 @@ class AgentSpec:
     name: str
     description: str
     claude_tools: tuple[str, ...]
+    claude_model: str | None
     body: str
 
     @classmethod
@@ -60,8 +63,11 @@ class AgentSpec:
         if not meta["description"]:
             raise ValueError(f"{source}: empty description")
         tools = tuple(tool.strip() for tool in meta["claude_tools"].split(",") if tool.strip())
+        model = meta.get("claude_model") or None
+        if model is not None and model not in _CLAUDE_MODELS:
+            raise ValueError(f"{source}: unknown claude_model {model!r}")
         body = f"{common.strip()}\n\n{match.group(2).strip()}\n"
-        return cls(name, meta["description"], tools, body)
+        return cls(name, meta["description"], tools, model, body)
 
     @classmethod
     def from_path(cls, path: Path, *, common: str) -> AgentSpec:
@@ -75,15 +81,16 @@ class AgentSpec:
         return f"<!-- {_MARKER.format(name=self.name)} -->"
 
     def render_claude(self) -> str:
-        """Claude Code subagent file (frontmatter fields: name, description, tools)."""
+        """Claude Code subagent file (frontmatter: name, description, tools, optional model)."""
+        model = f"model: {self.claude_model}\n" if self.claude_model else ""
         head = (
             f"---\nname: {self.name}\ndescription: {_quote(self.description)}\n"
-            f"tools: {', '.join(self.claude_tools)}\n---\n"
+            f"tools: {', '.join(self.claude_tools)}\n{model}---\n"
         )
         return f"{head}\n{self.marker}\n\n{self.body}"
 
     def render_copilot(self) -> str:
-        """Copilot custom agent file. No tool list: tool names differ between hosts (UNVERIFIED)."""
+        """Copilot custom agent file. No tools and no model: they differ per host (UNVERIFIED)."""
         head = f"---\ndescription: {_quote(self.description)}\n---\n"
         return f"{head}\n{self.marker}\n\n{self.body}"
 

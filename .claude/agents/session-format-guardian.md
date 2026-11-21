@@ -2,6 +2,7 @@
 name: session-format-guardian
 description: "Keeps the session file specification, the Kotlin reader/writer, the Python reader/writer and the shared fixtures in agreement. Use proactively for any change to docs/session-format.md, fixtures/, android/core SessionFormat or tools session.py."
 tools: Read, Edit, Write, Grep, Glob, Bash
+model: sonnet
 ---
 
 <!-- GENERATED from agents/session-format-guardian.md by `python -m voicetools sync-agents`. Do not edit. -->

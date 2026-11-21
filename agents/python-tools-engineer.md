@@ -2,6 +2,7 @@
 name: python-tools-engineer
 description: Implements and tests the desktop tooling in tools/ (session linter, planted-fact scorer, replay and scoring scripts, compression validation). Use for steps marked A that touch Python.
 claude_tools: Read, Edit, Write, Grep, Glob, Bash
+claude_model: sonnet
 ---
 ## Role
 

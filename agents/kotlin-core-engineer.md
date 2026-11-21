@@ -2,6 +2,7 @@
 name: kotlin-core-engineer
 description: Implements and tests pure-JVM logic in android/core (session format, chunker, retriever, prompt builder, sentence splitter, route policy, compression markers). Use for steps marked A that touch Kotlin and for any logic that must be testable without a phone.
 claude_tools: Read, Edit, Write, Grep, Glob, Bash
+claude_model: sonnet
 ---
 ## Role
 

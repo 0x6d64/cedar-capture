@@ -57,6 +57,30 @@ def test_invalid_sources_are_rejected(text: str) -> None:
         AgentSpec.from_text(text, common="c", source="x.md")
 
 
+def test_without_claude_model_no_model_line_is_written() -> None:
+    spec = AgentSpec.from_text(SOURCE, common="c", source="demo-agent.md")
+    assert spec.claude_model is None
+    assert "model:" not in spec.render_claude()
+
+
+def test_claude_model_goes_to_the_claude_file_only() -> None:
+    text = SOURCE.replace(
+        "claude_tools: Read, Grep\n", "claude_tools: Read, Grep\nclaude_model: haiku\n"
+    )
+    spec = AgentSpec.from_text(text, common="c", source="demo-agent.md")
+    assert spec.claude_model == "haiku"
+    assert "tools: Read, Grep\nmodel: haiku\n---\n" in spec.render_claude()
+    assert "model:" not in spec.render_copilot()
+
+
+def test_unknown_claude_model_is_rejected() -> None:
+    text = SOURCE.replace(
+        "claude_tools: Read, Grep\n", "claude_tools: Read, Grep\nclaude_model: gpt-4\n"
+    )
+    with pytest.raises(ValueError, match="claude_model"):
+        AgentSpec.from_text(text, common="c", source="demo-agent.md")
+
+
 def test_name_must_match_file_name(tmp_path: Path) -> None:
     root = make_repo(tmp_path)
     (root / "agents" / "demo-agent.md").rename(root / "agents" / "other.md")

@@ -2,6 +2,7 @@
 name: kotlin-core-engineer
 description: "Implements and tests pure-JVM logic in android/core (session format, chunker, retriever, prompt builder, sentence splitter, route policy, compression markers). Use for steps marked A that touch Kotlin and for any logic that must be testable without a phone."
 tools: Read, Edit, Write, Grep, Glob, Bash
+model: sonnet
 ---
 
 <!-- GENERATED from agents/kotlin-core-engineer.md by `python -m voicetools sync-agents`. Do not edit. -->
