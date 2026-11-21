@@ -1,4 +1,4 @@
-package org.example.voicecapture.core
+package org.martindemling.cedarcapture.core
 
 import java.util.Locale
 

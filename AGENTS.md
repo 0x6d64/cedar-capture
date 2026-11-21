@@ -90,6 +90,9 @@ Ask a human first:
 - Changing any threshold in `docs/gates.md` or any success criterion.
 
 Never:
+- Stage or commit anything (`git add`, `git commit`, `git stash`, `git commit --amend`, or any equivalent) unless a
+  human explicitly asks for it. Finish with the changes in the working tree and say what you would commit. Read-only
+  git commands (`status`, `diff`, `log`, `show`) are always fine.
 - Commit audio, models, secrets, API keys or personal data. `data/` and `models/` are ignored on purpose.
 - Add any network call to the app's core path (requirement `REQ-NFR-01`: works in airplane mode).
 - Invent a measurement, benchmark number or library API. If you did not run it or read it, say so.
@@ -115,7 +118,8 @@ Never:
 - Interfaces in `core` describe capabilities; Android and native implementations live in `app`.
 - One owner per native handle (speech engine, LLM context). Guard native state with a mutex. Always unload.
 - Compose for UI; the foreground service owns the pipeline, the UI only observes it.
-- Package name `org.example.voicecapture` is a placeholder. Rename it once, in one commit.
+- Package name is `org.martindemling.cedarcapture` (renamed from the placeholder `org.example.voicecapture`).
+  `tools/tests/test_android_package.py` keeps namespace, `package` lines and directories in agreement.
 
 ### Docs and IDs
 

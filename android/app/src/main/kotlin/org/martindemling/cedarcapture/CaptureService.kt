@@ -1,4 +1,4 @@
-package org.example.voicecapture
+package org.martindemling.cedarcapture
 
 import android.app.Notification
 import android.app.NotificationChannel

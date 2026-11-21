@@ -1,4 +1,4 @@
-package org.example.voicecapture.core
+package org.martindemling.cedarcapture.core
 
 // Capability interfaces from the plan (docs/architecture.md). Sketches: blocking calls and callbacks so that this module
 // stays dependency-free (ADR-0002). Android and native implementations live in :app. Change only with human approval.

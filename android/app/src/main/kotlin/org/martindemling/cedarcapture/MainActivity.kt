@@ -1,4 +1,4 @@
-package org.example.voicecapture
+package org.martindemling.cedarcapture
 
 import android.content.Intent
 import android.os.Bundle
