@@ -47,6 +47,9 @@ cd tools && python -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
 ruff check . && ruff format --check . && mypy src && pytest
 
+# Git hooks (from the repository root; pre-commit is installed separately, e.g. `pipx install pre-commit`)
+cd .. && pre-commit install && pre-commit run --all-files && cd tools
+
 # Android (needs JDK 17 and an SDK with platform 37.0; set JAVA_HOME and ANDROID_HOME)
 cd ../android
 ./gradlew :core:test          # 59 tests
