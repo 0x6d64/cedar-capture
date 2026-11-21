@@ -21,6 +21,33 @@ Every measurement goes here, newest first. Agents may draft entries from numbers
 
 ## Entries
 
+### STEP-01 (re-check after package rename) - 2026-11-21
+
+- Label: n/a (not a gate)    (human-confirmed: no)
+- Device / Android version / patch level: Pixel 7 (`panther`), serial `2C201FDH2005HA`; Android 17 / API 37.1, patch
+  2026-10-05 as in the GATE-01 entry below (not re-read in this run)
+- App version (git commit): `dca2af6` (package rename completed), debug build, `versionName 0.1.0`; APK built from that
+  tree in the same session
+- Tool versions (engine, runtime, NDK, Gradle): AGP 9.5.2, Gradle 9.6.0, Kotlin 2.2.10, JDK 17 (Temurin 17.0.21)
+- Model file(s), quantization, source and license: n/a
+- Recording used (name, run a/b/c): n/a
+- Raw numbers (with units):
+  - `./gradlew clean :core:test :app:assembleDebug` -> `BUILD SUCCESSFUL`; core test results XML: 11 tests, 0 failures,
+    0 errors; `app-debug.apk` 29,010,957 bytes
+  - `adb install -r app-debug.apk` -> `Performing Streamed Install` / `Success` (a first attempt hung and was stopped;
+    the retry with a 90 s timeout succeeded, cause of the hang not determined)
+  - `adb shell pm list packages` -> `package:org.martindemling.cedarcapture`
+  - `adb shell monkey -p org.martindemling.cedarcapture -c android.intent.category.LAUNCHER 1` -> `Events injected: 1`
+  - `adb shell dumpsys activity activities` 4 s after launch -> `topResumedActivity=ActivityRecord{... org.martindemling.cedarcapture/.MainActivity ...}`
+  - `adb logcat -d -b crash` after `logcat -c` and launch -> empty; `adb shell pidof` -> `32455` (process alive)
+- Thresholds compared against (docs/gates.md revision): STEP-01 exit check in `docs/plan/steps.md`: "app installs and
+  starts on the Pixel 7" -> met again after the rename
+- Notes, anomalies, what was not verified: purpose is to confirm that the manifest's relative names (`.MainActivity`,
+  `.CaptureService`) still resolve after the namespace and `package` lines were aligned (commit `dca2af6`). No
+  screenshot was taken, so the on-screen title and buttons were not re-observed. **Start recording** and **Stop** were
+  not tapped; the known `SecurityException` on Start (missing runtime `RECORD_AUDIO`, STEP-06) is therefore not
+  re-confirmed. Agent-run check; a human has not confirmed it.
+
 ### STEP-01 (on-device exit check) - 2026-11-21
 
 - Label: n/a (not a gate)    (human-confirmed: no)
