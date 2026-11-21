@@ -1,4 +1,4 @@
-package de.martindemling.cedarcapture.core
+package org.martindemling.cedarcapture.core
 
 import java.util.Locale
 

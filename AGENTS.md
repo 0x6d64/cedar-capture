@@ -118,7 +118,8 @@ Never:
 - Interfaces in `core` describe capabilities; Android and native implementations live in `app`.
 - One owner per native handle (speech engine, LLM context). Guard native state with a mutex. Always unload.
 - Compose for UI; the foreground service owns the pipeline, the UI only observes it.
-- Package name `org.example.voicecapture` is a placeholder. Rename it once, in one commit.
+- Package name is `org.martindemling.cedarcapture` (renamed from the placeholder `org.example.voicecapture`).
+  `tools/tests/test_android_package.py` keeps namespace, `package` lines and directories in agreement.
 
 ### Docs and IDs
 

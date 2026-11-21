@@ -1,4 +1,4 @@
-package de.martindemling.cedarcapture
+package org.martindemling.cedarcapture
 
 import android.app.Notification
 import android.app.NotificationChannel
