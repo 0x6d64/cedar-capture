@@ -114,6 +114,7 @@ class CapturePipelineTest {
 
             release.countDown()
             runner.join(10_000)
+            assertTrue(!runner.isAlive, "run() must finish once recognition is released")
             assertEquals(PipelineState.Stopped, pipeline.state)
             val speech = store.entries().filterIsInstance<SpeechEntry>()
             assertEquals(listOf(1L, 3L, 4L), speech.map { it.tSeconds }, "entries stay in order")
@@ -135,7 +136,7 @@ class CapturePipelineTest {
         val speech = store.entries().filterIsInstance<SpeechEntry>()
         assertEquals(1, speech.size, "the flushed segment is transcribed")
         assertEquals(1L, speech[0].tSeconds)
-        assertTrue(raw.sampleCount() in 50 * 512 until 52 * 512, "stopped within a frame or two of the request")
+        assertEquals(50 * 512, raw.sampleCount(), "the frame being processed is finished, then the loop ends")
         assertTrue(raw.closed && source.stopped && store.closed)
     }
 
@@ -207,6 +208,124 @@ class CapturePipelineTest {
         pipeline.run()
         assertIs<PipelineState.Error>(pipeline.state)
         assertEquals(1, states.size)
+    }
+
+    @Test
+    fun anErrorThatIsNotAnExceptionEndsInErrorAndPropagates() {
+        val source = HookedSource(wav()) { reads -> if (reads == 3) throw AssertionError("native bridge broke") }
+        val pipeline = pipeline(source = source)
+        val thrown = assertFailsWith<AssertionError> { pipeline.run() }
+        assertEquals("native bridge broke", thrown.message)
+        assertIs<PipelineState.Error>(pipeline.state)
+        assertTrue(raw.closed && source.stopped && store.closed, "cleanup still happens")
+    }
+
+    @Test
+    fun anExecutorThatFailsEndsInErrorWithoutHangingTheRun() {
+        val broken = java.util.concurrent.Executor { throw IllegalStateException("executor is broken") }
+        val pipeline = pipeline(executor = broken)
+        val runner = Thread { pipeline.run() }
+        runner.start()
+        runner.join(10_000)
+        assertTrue(!runner.isAlive, "run() hung on a task that was never accepted")
+        val state = assertIs<PipelineState.Error>(pipeline.state)
+        assertTrue("executor is broken" in state.message, state.message)
+        assertTrue(raw.closed && store.closed)
+    }
+
+    @Test
+    fun aRejectedRecognitionIsReportedAndCaptureContinues() {
+        val rejecting = java.util.concurrent.Executor { throw java.util.concurrent.RejectedExecutionException("shut down") }
+        val pipeline = pipeline(executor = rejecting)
+        pipeline.run()
+        assertEquals(PipelineState.Stopped, pipeline.state)
+        assertEquals(3, problems.size, problems.toString())
+        assertTrue(problems.all { "rejected" in it && "shut down" in it }, problems.toString())
+        assertEquals(TestWav.samples(spans).size, raw.sampleCount())
+        assertEquals(1, store.entries().size, "only the SessionStart entry")
+    }
+
+    @Test
+    fun anInterruptedDrainWaitsForTheRecognitionAndKeepsTheFlag() {
+        val release = CountDownLatch(1)
+        val started = CountDownLatch(1)
+        val slow = object : SpeechRecognizer {
+            private val fake = FakeRecognizer()
+
+            override fun transcribe(segment: AudioSegment): TranscriptSegment {
+                started.countDown()
+                release.await(10, TimeUnit.SECONDS)
+                return fake.transcribe(segment)
+            }
+        }
+        val executor = Executors.newSingleThreadExecutor()
+        var interruptFlagAfterRun = false
+        try {
+            val pipeline = pipeline(recognizer = slow, executor = executor)
+            val runner = Thread {
+                pipeline.run()
+                interruptFlagAfterRun = Thread.currentThread().isInterrupted
+            }
+            runner.start()
+            assertTrue(started.await(10, TimeUnit.SECONDS))
+            Thread.sleep(200) // the capture loop is done and run() is draining
+            runner.interrupt()
+            Thread.sleep(200)
+            assertTrue(runner.isAlive, "an interrupt must not cut the drain short")
+            release.countDown()
+            runner.join(10_000)
+            assertEquals(PipelineState.Stopped, pipeline.state)
+            assertEquals(3, store.entries().filterIsInstance<SpeechEntry>().size, "no transcript lost")
+            assertTrue(interruptFlagAfterRun, "the interrupt is restored for the caller")
+        } finally {
+            release.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun stopBeforeRunOpensTheSourceWritesTheSessionStartAndStops() {
+        val source = HookedSource(wav())
+        val pipeline = pipeline(source = source)
+        pipeline.stop()
+        pipeline.run()
+        assertEquals(PipelineState.Stopped, pipeline.state)
+        assertEquals(listOf<SessionEntry>(SessionStart("test", "2026-11-21T10:00:00")), store.entries())
+        assertEquals(0, raw.sampleCount())
+        assertTrue(source.stopped && raw.closed && store.closed)
+    }
+
+    @Test
+    fun aFailingObserverDoesNotBreakCapture() {
+        val pipeline = CapturePipeline(
+            source = wav(),
+            raw = raw,
+            vad = EnergyVad(),
+            recognizer = FakeRecognizer(),
+            store = store,
+            recognitionExecutor = DirectExecutor,
+            sessionId = "test",
+            startedIso = "2026-11-21T10:00:00",
+            onState = { throw IllegalStateException("observer bug") },
+            onProblem = { throw IllegalStateException("observer bug") },
+        )
+        pipeline.run()
+        assertEquals(PipelineState.Stopped, pipeline.state)
+        assertEquals(3, store.entries().filterIsInstance<SpeechEntry>().size)
+    }
+
+    @Test
+    fun aFailureWhileClosingAfterACleanRunEndsInError() {
+        val sink = object : RawAudioSink {
+            override fun write(samples: ShortArray, count: Int) = Unit
+
+            override fun close() = throw IOException("flush failed")
+        }
+        val pipeline = pipeline(sink = sink)
+        pipeline.run()
+        val state = assertIs<PipelineState.Error>(pipeline.state)
+        assertTrue("closing the raw audio failed" in state.message && "flush failed" in state.message, state.message)
+        assertTrue(store.closed, "the other resources are still closed")
     }
 
     @Test
