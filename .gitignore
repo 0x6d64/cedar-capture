@@ -3,11 +3,11 @@
 # ============================================================
 
 # Local data and personal recordings (never commit)
- /data/*
+/data/*
 !/data/README.md
 
 # Local models (never commit)
- /models/*
+/models/*
 !/models/README.md
 
 # Audio and model files
