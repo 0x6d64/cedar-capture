@@ -10,4 +10,3 @@ The full rules are in `AGENTS.md` at the repository root. Read it first. The ess
 - Never push, force-push or open a pull request unless a human explicitly asks for that exact action.
 - Never commit audio, models or secrets. Never mark a gate PASS; humans decide gates.
 - No network calls in the app's core path.
-- Role agents are generated from `agents/`; never hand-edit `.github/agents/` or `.claude/agents/`.

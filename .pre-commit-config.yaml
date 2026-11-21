@@ -18,11 +18,11 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: detect-private-key
       # fixtures/ and docs/testing/ are read-only ground truth (some fixtures end without a newline or with a
-      # blank line on purpose); agent files are generated. Fixers must never rewrite them.
+      # blank line on purpose). Fixers must never rewrite them.
       - id: end-of-file-fixer
-        exclude: ^(fixtures/|docs/testing/|\.claude/agents/|\.github/agents/)
+        exclude: ^(fixtures/|docs/testing/)
       - id: trailing-whitespace
-        exclude: ^(fixtures/|docs/testing/|\.claude/agents/|\.github/agents/)|\.md$ # .md: see .editorconfig
+        exclude: ^(fixtures/|docs/testing/)|\.md$ # .md: see .editorconfig
       - id: mixed-line-ending
         args: [--fix=no] # .gitattributes decides line endings (LF, CRLF for .bat)
 
@@ -44,14 +44,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: sync-agents-check
-        name: generated agent files are in sync (python -m voicetools sync-agents --check)
-        language: python
-        entry: >-
-          python -c "import sys; sys.path.insert(0, 'tools/src');
-          from voicetools.cli import main; sys.exit(main(['sync-agents', '--check']))"
-        files: ^(agents/|\.claude/agents/|\.github/agents/|tools/src/voicetools/agents\.py)
-        pass_filenames: false
       - id: no-personal-data
         name: nothing from data/ or models/ (git-ignored on purpose, see AGENTS.md)
         language: fail
