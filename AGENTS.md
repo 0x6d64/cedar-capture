@@ -93,6 +93,9 @@ Never:
 - Stage or commit anything (`git add`, `git commit`, `git stash`, `git commit --amend`, or any equivalent) unless a
   human explicitly asks for it. Finish with the changes in the working tree and say what you would commit. Read-only
   git commands (`status`, `diff`, `log`, `show`) are always fine.
+- Push, force-push, delete a remote branch or open a pull request unless a human explicitly asks for that exact action.
+  Pushing is not blocked by `.claude/settings.json`, so this rule is the only guard. Approval for one push does not carry
+  over to the next.
 - Commit audio, models, secrets, API keys or personal data. `data/` and `models/` are ignored on purpose.
 - Add any network call to the app's core path (requirement `REQ-NFR-01`: works in airplane mode).
 - Invent a measurement, benchmark number or library API. If you did not run it or read it, say so.
@@ -131,7 +134,10 @@ Never:
 
 - Conventional Commits with the ID as scope or suffix: `feat(core): parse session files (STEP-03)`.
 - Branch names: `step-03-session-format`. One step per branch where possible.
-- Fill in `.github/pull_request_template.md` completely.
+- Merge locally with a merge commit (`git merge --no-ff <branch>`), never squash or rebase, and only when asked.
+  Pull requests are not used yet (open decision 8 in `docs/plan/project-plan.md`: CI arrives with STEP-40). When they
+  are, fill in `.github/pull_request_template.md` completely.
+- Work on a feature branch, not on `master`; the default branch is `master`.
 
 ## Definition of done (every task)
 
