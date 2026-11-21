@@ -12,7 +12,6 @@ go/no-go evidence (see `docs/gates.md`) before any larger investment.
 | Path | Purpose |
 | --- | --- |
 | `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md` | Instructions for AI coding agents |
-| `agents/` | Source of the role-specific agent definitions (generated for Claude Code and Copilot) |
 | `docs/` | Requirements, gates, plan, steps, decisions, test protocol, results log |
 | `android/core/` | Pure Kotlin/JVM module: session format, domain types, interfaces (has tests) |
 | `android/app/` | Android app skeleton: manifest, Compose activity, foreground service stub |
@@ -22,7 +21,7 @@ go/no-go evidence (see `docs/gates.md`) before any larger investment.
 
 ## What is verified and what is not
 
-1. The Python tooling was checked in a clean virtual environment: `ruff`, `mypy --strict` and 89 `pytest` tests pass (including a check that the generated agent files match `agents/`).
+1. The Python tooling was checked in a clean virtual environment: `ruff`, `mypy --strict` and 78 `pytest` tests pass.
 2. The Kotlin `core` module compiles and its 59 tests pass through Gradle 9.6.0 / JUnit
    (2026-11-21: `SessionFormatTest` 25, `WavAudioSourceTest` 16 and `CapturePipelineTest` 18 tests, 0 failures) against the shared fixtures.
 3. The Android `app` module builds and runs: `./gradlew :app:assembleDebug` produced a 29 MB debug APK on 2026-11-21,
@@ -32,7 +31,7 @@ go/no-go evidence (see `docs/gates.md`) before any larger investment.
    stage: no audio is captured, nothing is transcribed, no file is written. The versions in
    `android/gradle/libs.versions.toml` were checked against vendor documentation (AGP 9.5.2, Gradle 9.6.0, Kotlin
    2.2.10, Compose BOM 2026.09.00); sources, measured results and open questions: `docs/pinned-versions.md`. The CI
-   workflow has still not run. The Claude Code and Copilot configuration files (including the generated agent files)
+   workflow has still not run. The Claude Code and Copilot configuration files (including the agent files in `.claude/agents/`)
    follow conventions from memory and were not checked against current documentation. Details:
    `docs/skeleton-status.md`.
 4. The Gradle wrapper is committed (`gradlew`, `gradlew.bat`, `gradle/wrapper/*`, Gradle 9.6.0). You need JDK 17 and an

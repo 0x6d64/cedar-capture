@@ -12,15 +12,11 @@ workflow keeps those apart so agents never fabricate evidence.
 
 ## Agent definitions
 
-Seven role agents live in `agents/` (sources) and are generated into `.claude/agents/` and `.github/agents/`
-(`python -m voicetools sync-agents`). See `agents/README.md`.
+Three Claude Code subagents live in `.claude/agents/` and are edited there directly. Implementation work is done by the
+main session, which follows `AGENTS.md`; there are no per-module engineer agents.
 
 | Agent | Use it for | Writes |
 | --- | --- | --- |
-| `session-format-guardian` | Spec, parsers and fixtures must change together | yes |
-| `kotlin-core-engineer` | `android/core` logic (steps tagged A) | yes |
-| `python-tools-engineer` | `tools/` scripts | yes |
-| `android-app-engineer` | `android/app` (steps tagged S or D); states NOT BUILT / NOT RUN ON DEVICE | yes |
 | `results-scribe` | Draft results entries from pasted numbers; proposes labels only | results log |
 | `reviewer` | Independent read-only review before a human | no |
 | `doc-auditor` | Read-only ID and number consistency audit | no |

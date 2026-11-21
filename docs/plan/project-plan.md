@@ -242,7 +242,7 @@ Ratings are my judgment, not measurements.
 8. **CI: plan it, or drop the claim that it runs?** DECIDED (human, 2026-11-21): plan it. CI is enabled around review
    checkpoint 1, with STEP-40 (python and Kotlin `core` jobs; no Android SDK needed). The `:app:assembleDebug` job
    follows in STEP-41, once M1 work is underway. Anything measured on the phone stays manual and never depends on CI.
-   Until STEP-40 is done, CI has never run: `AGENTS.md` and `agents/README.md` say "CI runs the check", which is true
+   Until STEP-40 is done, CI has never run: `AGENTS.md` says "CI runs the check", which is true
    only from then on. Until CI exists, branches are merged locally with merge commits (no pull requests); pull
    requests become relevant once STEP-40 is done and there are more tests. State at the time of the decision: the
    workflow trigger was aligned to the default branch `master` (it said `main`); its four actions are still pinned to
