@@ -133,7 +133,9 @@ Never:
 ### Commits and pull requests
 
 - Conventional Commits with the ID as scope or suffix: `feat(core): parse session files (STEP-03)`.
-- Branch names: `step-03-session-format`. One step per branch where possible.
+- Branch names: a type prefix, a `/`, then a short slug: `step/03-session-format`, `chore/pre-commit`,
+  `fix/gitignore-spaces`, `docs/test-protocol-v2`. Use `step/` for a `STEP-*` item and `chore/`, `fix/` or `docs/`
+  otherwise. One step per branch where possible.
 - Merge locally with a merge commit (`git merge --no-ff <branch>`), never squash or rebase, and only when asked.
   Pull requests are not used yet (open decision 8 in `docs/plan/project-plan.md`: CI arrives with STEP-40). When they
   are, fill in `.github/pull_request_template.md` completely.
