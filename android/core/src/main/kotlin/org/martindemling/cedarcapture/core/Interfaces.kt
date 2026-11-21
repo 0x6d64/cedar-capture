@@ -21,6 +21,15 @@ interface AudioSource {
     fun stop()
 }
 
+/**
+ * Receives every sample of the source before anything else processes it (ADR-0003: raw audio is written first).
+ * The real implementation writes chunked WAV files (STEP-09). [write] copies the first [count] samples of [samples].
+ */
+interface RawAudioSink {
+    fun write(samples: ShortArray, count: Int)
+    fun close()
+}
+
 sealed interface VadEvent {
     data object Silence : VadEvent
     data object SpeechStarted : VadEvent

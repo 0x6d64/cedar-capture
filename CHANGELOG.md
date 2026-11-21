@@ -11,6 +11,11 @@ All notable changes to this project are documented here. Format: Keep a Changelo
   Sources, raw numbers and caveats: `docs/pinned-versions.md` and `docs/results/RESULTS-LOG.md`.
 
 ### Added
+- Capture pipeline with fakes (STEP-05): `CapturePipeline` runs source, raw audio, voice detection, a recognition queue
+  and the session store, with a `PipelineState` (Idle, Recording, Stopped, Error). Raw audio is written before the
+  detector sees a frame, and capture never waits for recognition. A recognizer failure is reported and capture goes on; a
+  source, raw-sink or store failure ends in `Error`. New `RawAudioSink` interface (public `core` API, approved in the
+  STEP-03 to STEP-05 plan). A generated WAV through the pipeline gives the expected session file.
 - WAV replay `AudioSource` (STEP-04): `WavAudioSource` reads 16 kHz mono PCM16 WAV into the caller's buffer (the pipeline
   will use 512-sample frames), fast or in real time (`Pacing`, testable through `PacingClock`), and rejects other
   formats, including WAVE_FORMAT_EXTENSIBLE, with a clear message. `VoiceActivityDetector`

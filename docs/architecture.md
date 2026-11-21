@@ -30,7 +30,7 @@ flowchart LR
 
 | Module | Contains | Rules |
 | --- | --- | --- |
-| `android/core` | Session entries, session format reader/writer, interfaces (`AudioSource`, `VoiceActivityDetector`, `SpeechRecognizer`, `SessionStore`, `LlmEngine`, `Retriever`, `TextToSpeaker`) | Pure Kotlin/JVM. No Android imports, no third-party runtime dependencies, no coroutines (ADR-0002) |
+| `android/core` | Session entries, session format reader/writer, `CapturePipeline` (source, raw audio, VAD, recognition queue, session store), interfaces (`AudioSource`, `RawAudioSink`, `VoiceActivityDetector`, `SpeechRecognizer`, `SessionStore`, `LlmEngine`, `Retriever`, `TextToSpeaker`) | Pure Kotlin/JVM. No Android imports, no third-party runtime dependencies, no coroutines (ADR-0002) |
 | `android/app` | Compose UI, `CaptureService`, Android implementations (AudioRecord, Android TTS, MediaSession), native bridges | The service owns the pipeline; the UI only observes |
 | `tools` | `voicetools` Python package: session parser and linter, planted-fact scorer | No runtime dependencies |
 | `fixtures` | Shared session files used by both parsers | Read-only ground truth |

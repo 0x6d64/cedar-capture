@@ -23,8 +23,8 @@ go/no-go evidence (see `docs/gates.md`) before any larger investment.
 ## What is verified and what is not
 
 1. The Python tooling was checked in a clean virtual environment: `ruff`, `mypy --strict` and 73 `pytest` tests pass (including a check that the generated agent files match `agents/`).
-2. The Kotlin `core` module compiles and its 41 tests pass through Gradle 9.6.0 / JUnit
-   (2026-11-21: `SessionFormatTest` 25 and `WavAudioSourceTest` 16 tests, 0 failures) against the shared fixtures.
+2. The Kotlin `core` module compiles and its 52 tests pass through Gradle 9.6.0 / JUnit
+   (2026-11-21: `SessionFormatTest` 25, `WavAudioSourceTest` 16 and `CapturePipelineTest` 11 tests, 0 failures) against the shared fixtures.
 3. The Android `app` module builds and runs: `./gradlew :app:assembleDebug` produced a 29 MB debug APK on 2026-11-21,
    and that APK installed and started on the Pixel 7 (title "Voice Capture - skeleton", two buttons, no crash). Tapping
    **Start recording** crashes with `SecurityException: Starting FGS with type microphone ... requires ... RECORD_AUDIO`,
@@ -49,7 +49,7 @@ ruff check . && ruff format --check . && mypy src && pytest
 
 # Android (needs JDK 17 and an SDK with platform 37.0; set JAVA_HOME and ANDROID_HOME)
 cd ../android
-./gradlew :core:test          # 41 tests
+./gradlew :core:test          # 52 tests
 ./gradlew :app:assembleDebug  # APK in app/build/outputs/apk/debug/
 
 # On the phone (adb ships with the SDK but is not always on PATH;
