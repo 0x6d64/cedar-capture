@@ -17,11 +17,12 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
       - id: detect-private-key
-      # fixtures/ is read-only ground truth: some files end without a newline or with a blank line on purpose.
+      # fixtures/ and docs/testing/ are read-only ground truth (some fixtures end without a newline or with a
+      # blank line on purpose); agent files are generated. Fixers must never rewrite them.
       - id: end-of-file-fixer
-        exclude: ^fixtures/
+        exclude: ^(fixtures/|docs/testing/|\.claude/agents/|\.github/agents/)
       - id: trailing-whitespace
-        exclude: ^fixtures/|\.md$ # .editorconfig keeps trailing whitespace in Markdown
+        exclude: ^(fixtures/|docs/testing/|\.claude/agents/|\.github/agents/)|\.md$ # .md: see .editorconfig
       - id: mixed-line-ending
         args: [--fix=no] # .gitattributes decides line endings (LF, CRLF for .bat)
 
@@ -62,3 +63,4 @@ repos:
         language: fail
         entry: audio files must not be committed
         files: \.(wav|m4a|mp3|flac|ogg|opus|aac)$
+        exclude: ^fixtures/ # .gitignore allows synthetic fixture audio (fixtures/**/*.wav)

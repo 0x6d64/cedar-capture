@@ -52,6 +52,7 @@ not replace the test commands above. Never bypass them with `--no-verify`; fix t
 pre-commit install          # once per clone
 pre-commit run --all-files  # run every hook by hand
 ```
+
 Run every check that applies to your change before you finish.
 
 ## Layout
