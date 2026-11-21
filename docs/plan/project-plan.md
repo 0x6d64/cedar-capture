@@ -238,6 +238,13 @@ Ratings are my judgment, not measurements.
 5. Whether streaming answers stay out of the POC.
 6. The minimum Android version, after reading your phone’s version.
 7. Whether retrieval-only answers become a planned feature instead of only a fallback.
+8. **CI: plan it, or drop the claim that it runs?** `.github/workflows/ci.yml` exists, but no `REQ-*`, `GATE-*` or
+   `STEP-*` covers it, it has never run, and nothing in this plan schedules it. It also cannot run as written: it
+   triggers on pushes to `main`, while the default branch is `master`, and its four actions are pinned to tags rather
+   than commit SHAs (the file itself carries a TODO to pin them before the repository goes public). `AGENTS.md` and
+   `agents/README.md` both state that "CI runs the check", which is currently false. Either add a step at the end of
+   `docs/plan/steps.md` and fix the workflow, or remove those claims. Human decision; nothing is recorded either way
+   yet.
 
 ## 13. Assumptions and unknowns
 
