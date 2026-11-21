@@ -10,8 +10,8 @@ must be checked first.
 
 | ID | Step | Who | Exit check | Status |
 | --- | --- | --- | --- | --- |
-| STEP-P1 | Install current stable Android Studio with NDK and CMake; enable USB debugging; `adb devices` lists the phone | H | phone listed | |
-| STEP-P2 | Note Android version and patch level (GATE-01) | H | recorded in results log | |
+| STEP-P1 | Install current stable Android Studio with NDK and CMake; enable USB debugging; `adb devices` lists the phone | H | phone listed | done |
+| STEP-P2 | Note Android version and patch level (GATE-01) | H | recorded in results log | done |
 | STEP-P3 | Collect recordings (GATE-02), voice-detection model, candidate speech models; convert to 16 kHz mono WAV | H | files in `data/`, `models/` | |
 | STEP-P4 | Download the newest sherpa-onnx Android release (use the newest tag; an older write-up's version number is UNVERIFIED) | H | archive present | |
 | STEP-00 | Install a pre-built sherpa-onnx demo APK and try your recording through a laptop speaker | H D | first impression of speed and accuracy noted | |
@@ -20,7 +20,7 @@ must be checked first.
 
 | ID | Step | Who | Exit check | Status |
 | --- | --- | --- | --- | --- |
-| STEP-01 | Verify and bump placeholder versions in `android/gradle/libs.versions.toml`; generate the Gradle wrapper; make `:app` build | S | app installs and starts on the Pixel 7 | |
+| STEP-01 | Verify and bump placeholder versions in `android/gradle/libs.versions.toml`; generate the Gradle wrapper; make `:app` build | S | app installs and starts on the Pixel 7 | done a55f782 |
 | STEP-02 | Pure-Kotlin `core` module (exists in skeleton; verify it builds and tests run on JVM) | A | `./gradlew :core:test` green | |
 | STEP-03 | Session format writer and parser with tests (skeleton has a first version; compare with `docs/session-format.md` and `fixtures/`) | A | round trip, truncated file, interrupted marker tests pass in Kotlin and Python | |
 | STEP-04 | WAV replay `AudioSource`: 512-sample frames (32 ms) at 16 kHz mono PCM16, real-time or fast pacing; fake recognizer and VAD | A | unit test runs a WAV fixture to segments | |

@@ -25,14 +25,19 @@ go/no-go evidence (see `docs/gates.md`) before any larger investment.
 1. The Python tooling was checked in a clean virtual environment: `ruff`, `mypy --strict` and 37 `pytest` tests pass (including a check that the generated agent files match `agents/`).
 2. The Kotlin `core` module compiles and its 11 tests pass through Gradle 9.6.0 / JUnit
    (2026-11-21: `SessionFormatTest`, 11 tests, 0 failures) against the shared fixtures.
-3. The Android `app` module builds: `./gradlew :app:assembleDebug` produced a 29 MB debug APK on 2026-11-21. It has NOT
-   been installed or run on the phone. The versions in `android/gradle/libs.versions.toml` were checked against vendor
-   documentation (AGP 9.5.2, Gradle 9.6.0, Kotlin 2.2.10, Compose BOM 2026.09.00); sources, measured results and open
-   questions: `docs/pinned-versions.md`. The CI workflow has still not run. The Claude Code and Copilot configuration
-   files (including the generated agent files) follow conventions from memory and were not checked against current
-   documentation. Details: `docs/skeleton-status.md`.
+3. The Android `app` module builds and runs: `./gradlew :app:assembleDebug` produced a 29 MB debug APK on 2026-11-21,
+   and that APK installed and started on the Pixel 7 (title "Voice Capture - skeleton", two buttons, no crash). Tapping
+   **Start recording** crashes with `SecurityException: Starting FGS with type microphone ... requires ... RECORD_AUDIO`,
+   because the skeleton never requests the runtime permission; STEP-06 adds that flow. So the app is a shell at this
+   stage: no audio is captured, nothing is transcribed, no file is written. The versions in
+   `android/gradle/libs.versions.toml` were checked against vendor documentation (AGP 9.5.2, Gradle 9.6.0, Kotlin
+   2.2.10, Compose BOM 2026.09.00); sources, measured results and open questions: `docs/pinned-versions.md`. The CI
+   workflow has still not run. The Claude Code and Copilot configuration files (including the generated agent files)
+   follow conventions from memory and were not checked against current documentation. Details:
+   `docs/skeleton-status.md`.
 4. The Gradle wrapper is committed (`gradlew`, `gradlew.bat`, `gradle/wrapper/*`, Gradle 9.6.0). You need JDK 17 and an
-   Android SDK with platform 37.0; set `JAVA_HOME` and `ANDROID_HOME` before building.
+   Android SDK with platform 37.0; set `JAVA_HOME` and `ANDROID_HOME` before building. The app runs on the Pixel 7 with
+   Android 17 / API 37.1, patch 2026-10-05 (GATE-01, in the results log).
 
 ## Bootstrap
 
@@ -46,6 +51,12 @@ ruff check . && ruff format --check . && mypy src && pytest
 cd ../android
 ./gradlew :core:test          # 11 tests
 ./gradlew :app:assembleDebug  # APK in app/build/outputs/apk/debug/
+
+# On the phone (adb ships with the SDK but is not always on PATH;
+# on Windows use "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe")
+adb devices -l
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell monkey -p org.example.voicecapture -c android.intent.category.LAUNCHER 1
 ```
 
 Licensed under the GNU General Public License v3.0; see `LICENSE`. Check the licenses of any model you add to
