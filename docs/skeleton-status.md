@@ -16,4 +16,4 @@ Generated on 2026-11-19 (UTC); updated 2026-11-21 after STEP-01. Be exact about 
 | Documents | written from the project plan | the plan itself rests on secondary sources, see `decisions-log.md` |
 
 Next: repair or replace the NDK before STEP-11, confirm the Claude and Copilot configuration files against their current
-documentation, and decide the CI question recorded in `docs/plan/project-plan.md` section 12.
+documentation, and run CI for the first time (STEP-40, decided in `docs/plan/project-plan.md` section 12, open decision 8).

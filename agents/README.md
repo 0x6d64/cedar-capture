@@ -9,7 +9,7 @@ Edit only the files here, then run (from the repository root):
 
 ```bash
 python -m voicetools sync-agents          # write the generated files
-python -m voicetools sync-agents --check  # fail if they are out of date (CI does this)
+python -m voicetools sync-agents --check  # fail if they are out of date (CI does this from STEP-40)
 ```
 
 Never edit the generated files by hand.

@@ -6,6 +6,18 @@ Status column: update to `done` with the commit hash when the exit check passed.
 Source of detail: the project plan and the detailed technical plan the owner holds; library details marked UNVERIFIED
 must be checked first.
 
+## Changing this plan
+
+- Never renumber or reuse a `STEP-*` ID. A new step gets the next free number at the end of the sequence (after the
+  highest existing ID), even when it belongs in the middle. Place its row where it belongs in the tables and say where
+  it runs ("after STEP-05"). Do not use dotted IDs like `STEP-5.1`.
+- Rows are in working order, not ID order. Refer to steps by ID, never by position.
+- Small edits (wording, exit check, Who) keep the ID. If a step's meaning changes a lot, mark it
+  `superseded by STEP-NN` in the Status column and add a new row. Do not delete rows.
+- New open decisions in `docs/plan/project-plan.md` section 12 get the next number; record a resolution in the same
+  entry with its date and who decided.
+- Changing a threshold in `docs/gates.md` or a success criterion needs a human first (`AGENTS.md`).
+
 ## Preparation
 
 | ID | Step | Who | Exit check | Status |
@@ -25,6 +37,7 @@ must be checked first.
 | STEP-03 | Session format writer and parser with tests (skeleton has a first version; compare with `docs/session-format.md` and `fixtures/`) | A | round trip, truncated file, interrupted marker tests pass in Kotlin and Python | |
 | STEP-04 | WAV replay `AudioSource`: 512-sample frames (32 ms) at 16 kHz mono PCM16, real-time or fast pacing; fake recognizer and VAD | A | unit test runs a WAV fixture to segments | |
 | STEP-05 | Pipeline orchestrator with fakes: source, raw writer, VAD, recognition queue, session store; state machine | A | fixture WAV through the pipeline gives the expected session file. **Checkpoint 1** | |
+| STEP-40 | Enable CI (open decision 8; runs after STEP-05, around checkpoint 1): workflow triggers on `master` and pull requests, pin each action to a commit SHA (look each one up, do not guess), run the python job and `:core:test` | A H | one green GitHub Actions run of both jobs, recorded in the results log; a human pushes it | |
 
 ## M1 Capture
 
@@ -35,6 +48,7 @@ must be checked first.
 | STEP-08 | `MicAudioSource`: AudioRecord 16 kHz mono PCM16, VOICE_RECOGNITION with a MIC switch, dedicated read thread | S D | no gaps in a 5-minute test | |
 | STEP-09 | Raw audio writer: chunked WAV (about 5 min per file, my proposal), header repair after a kill | A D | force-stop; files play on the desktop, at most the last seconds lost | |
 | STEP-10 | Session store on disk: append and flush per entry; interrupted marker on recovery | A D | force-stop test keeps the file valid. **Checkpoint 2** | |
+| STEP-41 | Add an `:app:assembleDebug` job to CI (Android SDK setup on the runner); runs after STEP-40 once M1 is underway | A H | green run that builds the debug APK; no job depends on the phone | |
 
 ## M2 Transcription
 
