@@ -34,7 +34,7 @@ must be checked first.
 | --- | --- | --- | --- | --- |
 | STEP-01 | Verify and bump placeholder versions in `android/gradle/libs.versions.toml`; generate the Gradle wrapper; make `:app` build | S | app installs and starts on the Pixel 7 | done a55f782 |
 | STEP-02 | Pure-Kotlin `core` module (exists in skeleton; verify it builds and tests run on JVM) | A | `./gradlew :core:test` green | done 84ceaab |
-| STEP-03 | Session format writer and parser with tests (skeleton has a first version; compare with `docs/session-format.md` and `fixtures/`) | A | round trip, truncated file, interrupted marker tests pass in Kotlin and Python | |
+| STEP-03 | Session format writer and parser with tests (skeleton has a first version; compare with `docs/session-format.md` and `fixtures/`) | A | round trip, truncated file, interrupted marker tests pass in Kotlin and Python | done 1ab1d29 |
 | STEP-04 | WAV replay `AudioSource`: 512-sample frames (32 ms) at 16 kHz mono PCM16, real-time or fast pacing; fake recognizer and VAD | A | unit test runs a WAV fixture to segments | |
 | STEP-05 | Pipeline orchestrator with fakes: source, raw writer, VAD, recognition queue, session store; state machine | A | fixture WAV through the pipeline gives the expected session file. **Checkpoint 1** | |
 | STEP-40 | Enable CI (open decision 8; runs after STEP-05, around checkpoint 1): workflow triggers on `master` and pull requests, pin each action to a commit SHA (look each one up, do not guess), run the python job and `:core:test` | A H | one green GitHub Actions run of both jobs, recorded in the results log; a human pushes it | |

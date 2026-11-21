@@ -194,6 +194,11 @@ class _Assembler:
     def unfinished(self) -> bool:
         return self._open is not None
 
+    @property
+    def open_line_no(self) -> int | None:
+        """Line of a COMPRESSION-START that has no END yet, or None."""
+        return None if self._open is None else self._open.line_no
+
     def feed(self, block: _Block) -> None:
         if block.tag == "COMPRESSION-START":
             self._close_unfinished()
@@ -255,6 +260,67 @@ class ParseResult:
     def speech_text(self) -> str:
         """All SPEECH bodies joined with newlines (what the planted-fact scorer reads)."""
         return "\n".join(entry.body for entry in self.entries if entry.tag == "SPEECH")
+
+
+def _line_offset(lines: list[str], line_no: int) -> int:
+    """Character offset of the start of 1-based line `line_no` in a text split on newlines."""
+    return sum(len(line) + 1 for line in lines[: line_no - 1])
+
+
+def _last_entry_line(blocks: list[_Block]) -> int:
+    """Line where the last entry starts (a closed compression block starts at its START line)."""
+    last = blocks[-1]
+    if last.tag == "COMPRESSION-END":
+        for block in reversed(blocks[:-1]):
+            if block.tag == "COMPRESSION-START":
+                return block.line_no
+    return last.line_no
+
+
+def _recovery_cut(text: str) -> int:
+    """Offset where an unfinished session file must be cut so that only whole entries remain."""
+    base = text[: text.rfind("\n") + 1]  # drop a last line that has no newline
+    if not base:
+        return 0
+    lines = base.split("\n")[:-1]
+    blocks = _split_blocks(lines, [])
+    assembler = _Assembler()
+    for block in blocks:
+        assembler.feed(block)
+    if assembler.open_line_no is not None:
+        return _line_offset(lines, assembler.open_line_no)
+    if not base.endswith("\n\n"):
+        return _line_offset(lines, _last_entry_line(blocks)) if blocks else 0
+    return len(base)
+
+
+@dataclass(frozen=True, slots=True)
+class Recovery:
+    """How to repair an unfinished session file (docs/session-format.md, writing rule 2).
+
+    Write `kept + appended` back to the session file and store `dropped_tail` in a side file,
+    so nothing is thrown away. Text in, text out: reading and writing files is the caller's job.
+    """
+
+    kept: str
+    dropped_tail: str
+    appended: str
+
+    @classmethod
+    def from_text(cls, text: str, *, t_seconds: int | None = None) -> Recovery:
+        cut = _recovery_cut(text)
+        kept = text[:cut]
+        entries = ParseResult.from_text(kept).entries
+        if entries and entries[-1].tag == "INTERRUPTED":
+            return cls(kept, text[cut:], "")  # already marked: recovering twice adds nothing
+        if t_seconds is None:
+            t_seconds = max((entry.t_seconds for entry in entries), default=0)
+        return cls(kept, text[cut:], Entry.interrupted(t_seconds=t_seconds).render())
+
+    @property
+    def kept_utf8_bytes(self) -> int:
+        """Length of `kept` in bytes, for truncating the file on disk."""
+        return len(self.kept.encode("utf-8"))
 
 
 def render_session(entries: Iterable[Entry]) -> str:
