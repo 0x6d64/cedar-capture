@@ -24,7 +24,7 @@ must be checked first.
 | --- | --- | --- | --- | --- |
 | STEP-P1 | Install current stable Android Studio with NDK and CMake; enable USB debugging; `adb devices` lists the phone | H | phone listed | done |
 | STEP-P2 | Note Android version and patch level (GATE-01) | H | recorded in results log | done |
-| STEP-P3 | Collect recordings (GATE-02), voice-detection model, candidate speech models; convert to 16 kHz mono WAV | H | files in `data/`, `models/` | |
+| STEP-P3 | Make the room recording and confirm facts and questions (GATE-02, `docs/testing/test-protocol.md` v2); collect the voice-detection model and candidate speech models; convert to 16 kHz mono WAV | H | files in `data/`, `models/` | |
 | STEP-P4 | Download the newest sherpa-onnx Android release (use the newest tag; an older write-up's version number is UNVERIFIED) | H | archive present | |
 | STEP-00 | Install a pre-built sherpa-onnx demo APK and try your recording through a laptop speaker | H D | first impression of speed and accuracy noted | |
 
@@ -57,10 +57,10 @@ must be checked first.
 | STEP-11 | Add sherpa-onnx native libraries and Kotlin API; proguard keep rules; 16 KB page alignment check of every native library | S | app loads native libs; alignment documented | |
 | STEP-12 | Push models to app storage with adb; load by file path | H D | files readable by the app | |
 | STEP-13 | Voice detection wrapper (Silero via the library): long configurable end-of-speech silence (start 2 s, a guess), min speech 0.15 s, max speech duration cap | S D | segment boundaries fall at natural pauses on the desk recording | |
-| STEP-14 | Recognizer wrapper for the first model under test (baseline: Whisper tiny or base) | S D | replay of desk recording yields a transcript; real-time factor logged | |
+| STEP-14 | Recognizer wrapper for the first model under test (baseline: Whisper tiny or base) | S D | replay of the room recording yields a transcript; real-time factor logged | |
 | STEP-15 | Recognition queue with bounded threads; lag shown in UI | S | with a slowed recognizer, recording continues and text catches up | |
 | STEP-16 | Replay action in the app plus the desktop scorer (`voicetools check-facts`) | A D | one command produces a score per run | |
-| STEP-17 | Compare engines, tune silence setting, fill results log for GATE-03 and GATE-04; run the car recording | D H | written engine decision. **Checkpoint 3** | |
+| STEP-17 | Compare engines, tune silence setting, fill results log for GATE-03 and GATE-04; the car recording is optional (protocol v2) | D H | written engine decision. **Checkpoint 3** | |
 
 ## M3 Questions and answers
 

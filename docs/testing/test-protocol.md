@@ -1,76 +1,109 @@
-# Test protocol: ground-truth rambling recording
+# Test protocol v2: free rambling recording, facts confirmed afterwards
 
-Purpose: one recording with known content, used for speech accuracy, "did I mention X" retrieval, false-yes detection
-and compression validation (GATE-02, GATE-04, GATE-09). All details below are invented; keep the fact types.
-Machine-readable versions: `planted-facts.json`, `questions.json`.
+Status: version 2, decided by the human on 2026-11-21. It replaces version 1 (a planted-fact script recorded twice for
+30 minutes, in a room and in a car).
 
-## 1. Rules for the recording
+## Purpose
 
-1. Do not read from a script. Reading sounds unlike rambling and gives falsely good results. Keep the fact list out of
-   sight; glance at it only between thoughts and talk freely around the facts about anything else.
-2. Include natural messiness: pauses of 10 to 20 seconds mid-thought, false starts, abandoned sentences, topic jumps.
-3. Spread the facts over the whole session. F13 to F15 fall in the middle third (roughly minutes 12 to 18), F01 in the
-   first minute, F20 in the last minute.
-4. Say each fact once, in your own words. Do not repeat facts to make them easier.
-5. Right after recording, write down roughly the minute at which you said each fact (logging sheet, section 4).
-6. Record twice: (a) quiet desk, phone built-in microphone; (b) in the car with road noise, phone mounted, built-in
-   microphone. Optional (c): Bluetooth headset in hands-free mode (for GATE-10).
-7. Length: 30 minutes for runs (a) and (b). Optional repeat in German later (stretch goal) with translated facts.
-8. Store as 16 kHz mono 16-bit WAV in `data/recordings/` (git-ignored).
+This is not a smoke test. It is the ground truth for these measurements:
 
-## 2. Hidden fact list
+| Check | Uses | Gate or step |
+| --- | --- | --- |
+| Speech accuracy on numbers, names, codes, dates and times | confirmed facts | GATE-04 |
+| Answer quality, especially false yes on things never said | question set | GATE-09 |
+| Sustained speed | the recording, replayed three times back to back (30 to 45 min of audio) | GATE-03 |
+| Early, middle and late facts | fact positions | reported, not gating |
+| Compression (later) | confirmed facts | STEP-34, STEP-35 |
 
-| ID | Type | Fact | Position |
-| --- | --- | --- | --- |
-| F01 | number | The cabin rental costs 840 euros for the week | first minute |
-| F02 | name | A colleague named Ilinca suggested the route | |
-| F03 | date | The inspection is on March 14th | |
-| F04 | hedge | "Maybe we should switch suppliers." Say clearly it is undecided | |
-| F05 | decision | We decided to keep the old router | |
-| F06 | self-correction | "The meeting is Tuesday, no, Thursday at 15:30" (correct: Thursday 15:30) | |
-| F07 | negation | We did not order the extra memory | |
-| F08 | magnitude | The drive is 12 kilometers, not 120 | |
-| F09 | identifier | Ticket number A-4471 | |
-| F10 | contrast | The blue folder holds contracts, the green folder holds invoices | |
-| F11 | name + day | Dragos will call back on Monday | |
-| F12 | time | The shop in Sibiu closes at 18:00 | |
-| F13 | code | The warehouse code is K-7 | middle third |
-| F14 | time | Mara's flight lands at 21:45 | middle third |
-| F15 | number | The battery pack is 4,800 milliamp hours | middle third |
-| F16 | term | Say "quantization" naturally in a sentence | |
-| F17 | term | Say "foreground service" naturally in a sentence | |
-| F18 | term | Say "voice activity detection" naturally in a sentence | |
-| F19 | hedge | "I might cancel the trip." Undecided | |
-| F20 | date | The deadline is the 30th | last minute |
+Version 2 makes recording easy: you ramble freely and plant nothing. The cost moves to afterwards, when you confirm a
+reference transcript and the facts. A replayed loop repeats its content, so for compression it is weaker evidence than one
+long recording. This is a known gap.
 
-## 3. Question set
+## 1. Before recording (2 minutes)
 
-Core set (questions 1 to 11) is gating (GATE-09). Questions 9 to 11 are never-said: the right answer is "not mentioned".
-Questions 8 and 16 test whether a hedge turned into a decision. Questions 12 to 16 are the position set: reported, not
-gating. See `questions.json` for expected answers.
+Glance at this checklist of **fact types**. Then put it away. Do not plan exact sentences. Work at least one of each into
+your rambling, the way you would naturally:
 
-## 4. Logging sheet (fill in right after recording)
+| Type | Example of the kind of thing |
+| --- | --- |
+| number | a price or an amount |
+| magnitude | "12 kilometers, not 120" |
+| code or identifier | "K-7", "A-4471" |
+| person's name | German or English names, whichever you say naturally |
+| date | "March 14th" |
+| clock time | "15:30" |
+| self-correction | "Tuesday, no, Thursday" |
+| negation | something you did **not** do |
+| hedge | a "maybe" that is not a decision |
 
-One row per fact: ID, approximate minute said, exact words you used, recording run (a, b or c). Keep it as plain text next
-to the audio (`data/recordings/<name>.facts.txt`).
+Say something from the checklist in the first minute, and something in the last minute.
 
-## 5. Scoring
+## 2. Recording
 
-1. **Transcript check:** run `voicetools check-facts <transcript>`. Count numbers, names, codes, dates and times
-   separately from the rest; digits and names are where small models fail. Optionally transcribe a 5-minute section by
-   hand and compute word error rate.
-2. **Question check:** mark each answer correct, wrong or missing. Flag every false yes on questions 8 to 11 and 16
-   (never-said and hedge questions). A false yes is worse than a wrong or missing answer for this use case.
-3. **Position check:** compare retrieval success for an early fact (Q1), middle-third facts (Q12 to Q14) and the
-   last-minute fact (Q15).
-4. **Compression check:** which facts survive, which are lost, which are distorted (for example a hedge turned into a
-   decision). Method: mechanical checks of numbers, names and dates first; then claim-by-claim alignment with a model
-   different from the one that wrote the summary; then the planted-facts checklist.
-5. **Pass criteria:** see `docs/gates.md` (GATE-04 and GATE-09). The car run is measured and reported, not gating yet.
+1. **Language:** English, with names in German or English.
+2. **Length:** 10 to 15 minutes.
+3. **Place and microphone:** a room, with the phone's built-in microphone. The car recording is optional and comes later.
+   It is reported but does not gate.
+4. **How to talk:** do not read from a script. Pauses, false starts and topic jumps are welcome; they are what the app
+   must handle.
+5. **Privacy:** real rambling can contain personal details. The recording and everything derived from it stays in `data/`,
+   which is git-ignored. Talk about things you would not mind a few people reading.
+6. **Format:** convert to 16 kHz mono 16-bit WAV. One way, not yet run in this project:
+   `ffmpeg -i input.m4a -ar 16000 -ac 1 -c:a pcm_s16le data/recordings/<name>.wav`.
 
-## 6. Optional benchmark audio
+## 3. Right after recording, before any transcript (5 minutes)
 
-Read-speech corpora with known transcripts (public-domain audiobooks with their text, or Common Voice, which includes
-German; UNVERIFIED, not checked) are useful for repeatable engine comparisons. They test raw recognition, not rambling.
-A YouTube video is a weak choice: its captions are not reliable ground truth, and downloading may conflict with the
-site's terms.
+Write down from memory the facts you remember saying, each with a rough minute, in `data/recordings/<name>.notes.txt`.
+
+Do this before anyone or anything transcribes the audio. Facts are later chosen from this list, so they cannot be chosen
+because a speech engine happened to get them right. That would inflate GATE-04.
+
+## 4. Reference transcript (the main effort)
+
+Make a transcript you trust, at `data/recordings/<name>.reference.txt`. Either type it yourself, or correct a draft
+**while listening** to the audio.
+
+The draft must not come from the engine under test. A desktop transcription tool would be a new dependency and needs an
+ADR. The agent cannot listen to audio and cannot read `data/` (blocked in `.claude/settings.json`). You share with it only
+what you choose to paste.
+
+## 5. Choosing facts and questions (with the agent)
+
+1. Paste your notes from section 3, plus the passages of the reference transcript around each fact, into the chat.
+2. The agent proposes about 10 facts:
+   - at least one of each type in section 1
+   - spread across early, middle and late positions
+   - each with accepted spellings, for example `["jorg", "joerg"]` (the scorer strips accents, so "Jörg" matches `jorg`)
+3. The agent proposes 11 core questions in the GATE-09 shape:
+   - questions 1 to 7: factual, each about a confirmed fact
+   - question 8: a hedge question, "did I decide …?" for the "maybe" fact
+   - questions 9 to 11: never-said questions, each about something plausible that you did **not** mention. Check them
+     against the full reference transcript.
+   - optional questions from 12 on (for example the negation and the last-minute fact): reported, not gating
+4. You confirm or edit every fact and question. Only confirmed entries count.
+5. The agent writes both files to `data/recordings/<name>.facts.json` and `data/recordings/<name>.questions.json`. They
+   use the same format as `planted-facts.json` and `questions.json` in this folder.
+
+## 6. Scoring
+
+1. **Transcript check (GATE-04):** `voicetools check-facts <transcript> --facts data/recordings/<name>.facts.json`.
+   Numbers, names, codes, dates and times count separately from the rest (`strict_kinds`). With 10 facts, each fact is
+   worth 10 percentage points.
+2. **Question check (GATE-09):** mark each answer correct, wrong or missing. Flag every false yes on the hedge and
+   never-said questions. A false yes is worse than a wrong or missing answer for this use case.
+3. **Position check:** compare an early, a middle and the last-minute fact. Reported, not gating.
+4. **Sustained speed (GATE-03):** replay the WAV three times back to back and measure the real-time factor over the whole
+   run.
+5. **Pass criteria:** see `docs/gates.md`.
+
+## 7. The example set in this folder
+
+`planted-facts.json` and `questions.json` hold an invented example set from protocol version 1 (20 facts, 16
+questions). The Python tests use them to check the scorer and the file format. They are not the ground truth for a real
+recording. Do not edit them to make a test pass.
+
+## 8. Optional benchmark audio
+
+Read-speech corpora with known transcripts, such as public-domain audiobooks with their text or Common Voice, are useful
+for repeatable engine comparisons. This is UNVERIFIED; not checked. They test raw recognition, not rambling. A YouTube
+video is a weak choice: its captions are not reliable ground truth, and downloading may conflict with the site's terms.

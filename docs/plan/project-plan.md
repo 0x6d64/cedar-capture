@@ -10,7 +10,7 @@ IDs such as GATE-05 and STEP-18 refer to the detailed doc “POC Plan: Offline V
 Success criteria (proposed thresholds, confirm before measuring):
 
 1. **SC-1** A 2-hour drive session is recorded with the screen locked and a navigation app open, with no gap, crash or process kill.
-2. **SC-2** At least 90% of the planted numbers, names and codes are correct in the desk-recording transcript.
+2. **SC-2** At least 90% of the confirmed numbers, names and codes are correct in the room-recording transcript (test protocol v2).
 3. **SC-3** Zero false “yes” answers on the three never-said questions.
 4. **SC-4** At least 6 of 7 factual questions are answered correctly by the model that runs on the phone.
 5. **SC-5** Time from the end of a question to the first spoken word is 15 seconds or less (marginal up to 30).
@@ -39,7 +39,7 @@ Every milestone ends in a pass or fail check, and every failure has a defined fa
 
 ```mermaid
 flowchart TD
-    A(["Start"]) --> B["M-1 Prep: two recordings, demo APK test, Android version"]
+    A(["Start"]) --> B["M-1 Prep: room recording with confirmed facts, demo APK test, Android version"]
     B --> C{"GATE-09 on desktop: do small models answer without false yes?"}
     C -->|pass| D["M0 Skeleton and replay"]
     C -->|fail| FB["Fallback: retrieval-only answers or answers on the desktop"]
@@ -64,7 +64,7 @@ flowchart TD
 
 | Milestone | Deliverable | Exit check |
 | --- | --- | --- |
-| M-1 Prep and measurement | Desk and car recordings with fact log, demo APK test, Android version noted, desktop answer-quality results | GATE-01, GATE-02, GATE-09 |
+| M-1 Prep and measurement | Room recording with confirmed facts and questions (test protocol v2; car recording optional), demo APK test, Android version noted, desktop answer-quality results | GATE-01, GATE-02, GATE-09 |
 | M0 Skeleton and replay | App builds; session format and replay pipeline pass unit tests with fake components | Review checkpoint 1 |
 | M1 Capture | Foreground service records with the screen locked; raw audio and session file survive a force-stop | GATE-05, checkpoint 2 |
 | M2 Transcription | Speech engine and voice detection on the phone, scored on the recordings | GATE-03, GATE-04, checkpoint 3 |
@@ -110,7 +110,7 @@ gantt
 | Gate | Check | Pass | Marginal | Fail |
 | --- | --- | --- | --- | --- |
 | GATE-03 | Speech speed (real-time factor) | Below 0.5 | 0.5 to 1.0 | Above 1.0, or audio dropped |
-| GATE-04 | Planted numbers, names and codes correct | 90% or more | 75% to 90% | Below 75% |
+| GATE-04 | Confirmed numbers, names and codes correct (room recording) | 90% or more | 75% to 90% | Below 75% |
 | GATE-05 | 30 minutes recorded, screen locked, navigation app open | No gap, no kill | none | Any silent stop |
 | GATE-07 | Time to first spoken word, 1,500-token prompt | 15 s or less | 15 to 30 s | Above 30 s |
 | GATE-09 | Answer quality on the 11 test questions | Zero false yes on questions 9 to 11, at least 6 of 7 factual correct | none | Any false yes, or fewer than 5 of 7 factual correct |
@@ -259,7 +259,7 @@ Ratings are my judgment, not measurements.
 
 ## 14. Next four actions
 
-1. Record the desk and car sessions with the planted facts.
+1. Make the 10 to 15 minute room recording and confirm its facts and questions (test protocol v2).
 2. Try a pre-built sherpa-onnx demo APK with the recording (STEP-00).
 3. Run the answer-quality test on the desktop (STEP-18, GATE-09).
 4. Note the phone’s Android version (GATE-01).

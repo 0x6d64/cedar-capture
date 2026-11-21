@@ -6,9 +6,9 @@ they are not adjusted after seeing results. Agents must not change thresholds an
 | Gate | Check | PASS | MARGINAL | FAIL |
 | --- | --- | --- | --- | --- |
 | GATE-01 | Record Android version and patch level of the Pixel 7 | n/a (fact) | | |
-| GATE-02 | Desk and car recordings plus fact log exist (`testing/test-protocol.md`) | both exist | | missing |
-| GATE-03 | Speech speed as real-time factor (processing time / audio time), sustained 30 min | < 0.5 | 0.5 to 1.0 | > 1.0, or audio dropped |
-| GATE-04 | Planted numbers, names, codes, dates, times correct in the desk-run transcript | >= 90% | 75% to 90% | < 75% |
+| GATE-02 | Room recording (10 to 15 min), notes, reference transcript and confirmed fact and question files exist (`testing/test-protocol.md` v2; car recording optional) | all exist | | missing |
+| GATE-03 | Speech speed as real-time factor (processing time / audio time), sustained 30 min (the room recording replayed back to back) | < 0.5 | 0.5 to 1.0 | > 1.0, or audio dropped |
+| GATE-04 | Confirmed numbers, names, codes, dates, times correct in the room-recording transcript | >= 90% | 75% to 90% | < 75% |
 | GATE-05 | 30 min recording, screen locked, navigation app in foreground | no gap, no process kill | | any silent stop |
 | GATE-06 | LLM prompt-processing and generation speed, per model, measured separately | numbers recorded | | |
 | GATE-07 | Time from end of question to first spoken word, ~1,500-token prompt | <= 15 s | 15 to 30 s | > 30 s |

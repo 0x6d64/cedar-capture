@@ -5,6 +5,10 @@ All notable changes to this project are documented here. Format: Keep a Changelo
 ## [Unreleased]
 
 ### Changed
+- Test protocol v2 (human decision, 2026-11-21): one 10 to 15 minute room recording of free rambling in English, with no
+  planted script. Facts and questions are chosen afterwards from your own notes and a reference transcript, and you confirm
+  them. They are kept in `data/`. The car recording is optional. GATE-02 and the GATE-04 wording follow; GATE-03 is
+  measured on the recording replayed back to back. Thresholds are unchanged.
 - Android toolchain pinned and proven to build and run (STEP-01): AGP 9.5.2, Gradle 9.6.0 (wrapper now committed),
   Kotlin 2.2.10, compileSdk 37, Compose BOM 2026.09.00, JDK 17. `kotlin-android` removed in favour of AGP 9 built-in
   Kotlin. `:core:test` (11 tests) and `:app:assembleDebug` both pass, and the APK installs and starts on the Pixel 7.
