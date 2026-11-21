@@ -9,6 +9,10 @@ All notable changes to this project are documented here. Format: Keep a Changelo
   planted script. Facts and questions are chosen afterwards from your own notes and a reference transcript, and you confirm
   them. They are kept in `data/`. The car recording is optional. GATE-02 and the GATE-04 wording follow; GATE-03 is
   measured on the recording replayed back to back. Thresholds are unchanged.
+- Agent setup simplified (human decision, 2026-11-21): only `reviewer`, `doc-auditor` and `results-scribe` remain, as
+  Claude Code subagents edited directly in `.claude/agents/`. Removed the four per-module engineer agents, the
+  `agents/` sources, the Copilot agent files, the `voicetools sync-agents` generator and its test, CI step and
+  pre-commit hook. Copilot and Codex keep reading `AGENTS.md`.
 - Android toolchain pinned and proven to build and run (STEP-01): AGP 9.5.2, Gradle 9.6.0 (wrapper now committed),
   Kotlin 2.2.10, compileSdk 37, Compose BOM 2026.09.00, JDK 17. `kotlin-android` removed in favour of AGP 9 built-in
   Kotlin. `:core:test` (11 tests) and `:app:assembleDebug` both pass, and the APK installs and starts on the Pixel 7.
@@ -16,7 +20,7 @@ All notable changes to this project are documented here. Format: Keep a Changelo
 
 ### Added
 - Pre-commit hooks (`.pre-commit-config.yaml`, revisions pinned to commit SHAs): file hygiene, ruff check and format,
-  mypy, the `sync-agents --check` drift check, and a block on committing `data/`, `models/` or audio files.
+  mypy, and a block on committing `data/`, `models/` or audio files.
   `fixtures/` is excluded from the whitespace fixers because it is ground truth.
 - Capture pipeline with fakes (STEP-05): `CapturePipeline` runs source, raw audio, voice detection, a recognition queue
   and the session store, with a `PipelineState` (Idle, Recording, Stopped, Error). Raw audio is written before the

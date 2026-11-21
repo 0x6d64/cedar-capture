@@ -30,12 +30,6 @@ pip install -e ".[dev]"
 ruff check . && ruff format --check . && mypy src && pytest
 ```
 
-Agent definitions (from the repository root; CI runs the check once STEP-40 is done):
-
-```bash
-python -m voicetools sync-agents --check   # use without --check to regenerate
-```
-
 Kotlin core, pure JVM, no Android SDK needed to run the tests (run from `android/`; needs the Gradle wrapper, see README):
 
 ```bash
@@ -45,7 +39,7 @@ Kotlin core, pure JVM, no Android SDK needed to run the tests (run from `android
 App (needs Android SDK and NDK): `./gradlew :app:assembleDebug`.
 
 Pre-commit hooks (from the repository root; config in `.pre-commit-config.yaml`). They run on every commit once
-installed: file hygiene, ruff, mypy, the agent sync check, and a block on `data/`, `models/` and audio files. They do
+installed: file hygiene, ruff, mypy, and a block on `data/`, `models/` and audio files. They do
 not replace the test commands above. Never bypass them with `--no-verify`; fix the cause or ask.
 
 ```bash
@@ -61,18 +55,15 @@ Run every check that applies to your change before you finish.
 - `android/app/` - Android app: UI, foreground service, Android-specific implementations.
 - `tools/` - Python desktop tooling (`voicetools`): session parser and linter, planted-fact scorer.
 - `fixtures/` - shared test inputs used by BOTH the Kotlin and Python tests. Treat as read-only ground truth.
-- `agents/` - source of the role-specific agent definitions (generated into `.claude/agents/` and `.github/agents/`).
 - `docs/` - requirements, gates, plan, ADRs, test protocol, results log.
 - `data/` and `models/` - git-ignored. Recordings and model files live here. Never commit them.
 
 ## Agent roles
 
-Role definitions live in `agents/*.md` and are generated into `.claude/agents/` (Claude Code) and `.github/agents/`
-(Copilot). Edit only `agents/`, then run `python -m voicetools sync-agents`. Never edit the generated files.
-
-Roles: `session-format-guardian`, `kotlin-core-engineer`, `python-tools-engineer`, `android-app-engineer`,
-`results-scribe`, `reviewer` (read-only), `doc-auditor` (read-only). Run `reviewer` on every change before a human looks
-at it. An agent must not review its own work.
+Claude Code subagents live in `.claude/agents/` and are edited there directly. There are three:
+`reviewer` (read-only), `doc-auditor` (read-only) and `results-scribe` (writes only the results log). Run `reviewer` on
+every change before a human looks at it. An agent must not review its own work. Other tools (Copilot, Codex) get the
+rules from this file.
 
 ## How to work
 
@@ -112,7 +103,6 @@ Never:
 - Mark a gate PASS yourself. Gates are decided by a human from measured numbers in the results log.
 - Edit `fixtures/` or `docs/testing/` ground truth to make a test pass. Fix the code, or ask.
 - Log transcript text to shared logs or exports unless the user asked for it.
-- Hand-edit files under `.claude/agents/` or `.github/agents/` (they are generated from `agents/`).
 
 ## Conventions
 
@@ -143,7 +133,9 @@ Never:
 ### Commits and pull requests
 
 - Conventional Commits with the ID as scope or suffix: `feat(core): parse session files (STEP-03)`.
-- Branch names: `step-03-session-format`. One step per branch where possible.
+- Branch names: a type prefix, a `/`, then a short slug: `step/03-session-format`, `chore/pre-commit`,
+  `fix/gitignore-spaces`, `docs/test-protocol-v2`. Use `step/` for a `STEP-*` item and `chore/`, `fix/` or `docs/`
+  otherwise. One step per branch where possible.
 - Merge locally with a merge commit (`git merge --no-ff <branch>`), never squash or rebase, and only when asked.
   Pull requests are not used yet (open decision 8 in `docs/plan/project-plan.md`: CI arrives with STEP-40). When they
   are, fill in `.github/pull_request_template.md` completely.

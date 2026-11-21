@@ -26,8 +26,6 @@ jobs:
           ruff format --check .
           mypy src
           pytest
-      - name: Agent files are in sync with agents/
-        run: python -m voicetools sync-agents --check
 
   kotlin-core:
     runs-on: ubuntu-latest

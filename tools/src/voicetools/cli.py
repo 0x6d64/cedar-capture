@@ -6,7 +6,6 @@ import argparse
 from collections.abc import Sequence
 from pathlib import Path
 
-from voicetools.agents import sync_agents
 from voicetools.facts import FactSet
 from voicetools.session import ParseResult
 
@@ -33,11 +32,6 @@ def _build_parser() -> argparse.ArgumentParser:
         help="the file is a session file; score only SPEECH entries",
     )
 
-    sync = commands.add_parser(
-        "sync-agents", help="generate .claude/agents and .github/agents from agents/*.md"
-    )
-    sync.add_argument("--check", action="store_true", help="only report files that are out of date")
-    sync.add_argument("--root", type=Path, default=REPO_ROOT, help="repository root")
     return parser
 
 
@@ -62,19 +56,8 @@ def _check_facts(transcript: Path, facts: Path, *, session: bool) -> int:
     return 0
 
 
-def _sync_agents(root: Path, *, check: bool) -> int:
-    changed = sync_agents(root, check=check)
-    for path in changed:
-        print(f"{'out of date' if check else 'updated'}: {path.relative_to(root)}")
-    if not changed:
-        print("agent files are in sync")
-    return 1 if (check and changed) else 0
-
-
 def main(argv: Sequence[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     if args.command == "lint-session":
         return _lint(args.path, allow_truncated=args.allow_truncated)
-    if args.command == "sync-agents":
-        return _sync_agents(args.root, check=args.check)
     return _check_facts(args.transcript, args.facts, session=args.session)
