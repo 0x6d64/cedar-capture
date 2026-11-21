@@ -1,0 +1,64 @@
+# pre-commit hooks. Install once with `pre-commit install`; run everything with `pre-commit run --all-files`.
+# Fast checks only. The Kotlin tests and pytest stay in CI and in the "Commands" section of AGENTS.md.
+# Revisions are frozen to commit SHAs (like the actions in .github/workflows); update with `pre-commit autoupdate --freeze`.
+minimum_pre_commit_version: "4.0.0"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: detect-private-key
+      # fixtures/ is read-only ground truth: some files end without a newline or with a blank line on purpose.
+      - id: end-of-file-fixer
+        exclude: ^fixtures/
+      - id: trailing-whitespace
+        exclude: ^fixtures/|\.md$ # .editorconfig keeps trailing whitespace in Markdown
+      - id: mixed-line-ending
+        args: [--fix=no] # .gitattributes decides line endings (LF, CRLF for .bat)
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 9026c9127e153371d7a78dfcb0c45ae2046a3d10  # frozen: v0.17.6
+    hooks:
+      - id: ruff-check
+        files: ^tools/
+      - id: ruff-format
+        files: ^tools/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: ad26ebfa797fcb9b8f83275937c1c1d6e126719c  # frozen: v2.4.1
+    hooks:
+      - id: mypy
+        files: ^tools/src/
+        pass_filenames: false
+        args: [--config-file=tools/pyproject.toml, tools/src]
+
+  - repo: local
+    hooks:
+      - id: sync-agents-check
+        name: generated agent files are in sync (python -m voicetools sync-agents --check)
+        language: python
+        entry: >-
+          python -c "import sys; sys.path.insert(0, 'tools/src');
+          from voicetools.cli import main; sys.exit(main(['sync-agents', '--check']))"
+        files: ^(agents/|\.claude/agents/|\.github/agents/|tools/src/voicetools/agents\.py)
+        pass_filenames: false
+      - id: no-personal-data
+        name: nothing from data/ or models/ (git-ignored on purpose, see AGENTS.md)
+        language: fail
+        entry: files under data/ or models/ must never be committed
+        files: ^(data|models)/
+        exclude: ^(data|models)/README\.md$
+      - id: no-audio-files
+        name: no audio files (recordings may hold personal data; ask a human first)
+        language: fail
+        entry: audio files must not be committed
+        files: \.(wav|m4a|mp3|flac|ogg|opus|aac)$

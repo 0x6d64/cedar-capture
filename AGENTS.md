@@ -43,6 +43,15 @@ Kotlin core, pure JVM, no Android SDK needed to run the tests (run from `android
 ```
 
 App (needs Android SDK and NDK): `./gradlew :app:assembleDebug`.
+
+Pre-commit hooks (from the repository root; config in `.pre-commit-config.yaml`). They run on every commit once
+installed: file hygiene, ruff, mypy, the agent sync check, and a block on `data/`, `models/` and audio files. They do
+not replace the test commands above. Never bypass them with `--no-verify`; fix the cause or ask.
+
+```bash
+pre-commit install          # once per clone
+pre-commit run --all-files  # run every hook by hand
+```
 Run every check that applies to your change before you finish.
 
 ## Layout
@@ -113,7 +122,7 @@ Never:
 - Alternate constructors as classmethods (`Entry.speech(...)`), not module-level factory functions.
 - Keyword-only arguments for anything with more than two parameters.
 - `pathlib.Path` at API boundaries, never bare `str` paths.
-- No dependencies at runtime unless an ADR says otherwise (dev tools only: pytest, ruff, mypy).
+- No dependencies at runtime unless an ADR says otherwise (dev tools only: pytest, ruff, mypy, pre-commit).
 
 ### Kotlin (`android/`)
 
