@@ -35,6 +35,16 @@ data class CompressionEntry(
     val summary: String,
 ) : SessionEntry
 
+/**
+ * How to repair an unfinished session file (docs/session-format.md, writing rule 2). Write [kept] + [appended] back to the
+ * session file and store [droppedTail] in a side file so nothing is thrown away. Text in, text out: file I/O is the
+ * caller's job (STEP-10).
+ */
+data class Recovery(val kept: String, val droppedTail: String, val appended: String) {
+    /** Length of [kept] in bytes, for truncating the file on disk. */
+    val keptUtf8Bytes: Int get() = kept.toByteArray(Charsets.UTF_8).size
+}
+
 /** Entries read from a session file, plus truncation and problem reports. */
 data class ParseResult(
     val entries: List<SessionEntry>,

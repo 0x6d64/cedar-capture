@@ -11,5 +11,8 @@ All notable changes to this project are documented here. Format: Keep a Changelo
   Sources, raw numbers and caveats: `docs/pinned-versions.md` and `docs/results/RESULTS-LOG.md`.
 
 ### Added
+- Session recovery (STEP-03): `SessionFormat.recover` (Kotlin) and `Recovery.from_text` (Python) cut an unfinished
+  session file back to its last whole entry and build the `[INTERRUPTED]` marker; spec writing rule 2 now says how.
+  Format stays version 1. New tests, including recovery from every prefix of a valid file, in both languages.
 - Role-specific agent definitions in `agents/`, generated for Claude Code and Copilot (`voicetools sync-agents`).
 - Initial repository skeleton: docs, test protocol, session format spec, Kotlin core module, Python tooling, CI.

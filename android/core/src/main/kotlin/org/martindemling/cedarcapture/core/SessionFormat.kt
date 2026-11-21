@@ -69,6 +69,42 @@ object SessionFormat {
         )
     }
 
+    /**
+     * Repairs an unfinished session file (writing rule 2 in the spec): keeps only whole entries, returns the cut-off
+     * tail so the caller can save it, and builds the `[INTERRUPTED ...]` entry to append. [tSeconds] defaults to the
+     * latest time among the kept entries. Mirrors tools/src/voicetools/session.py (`Recovery.from_text`).
+     */
+    fun recover(text: String, tSeconds: Long? = null): Recovery {
+        val cut = recoveryCut(text)
+        val kept = text.substring(0, cut)
+        val time = tSeconds ?: parse(kept).entries.maxOfOrNull { it.tSeconds } ?: 0L
+        return Recovery(kept, text.substring(cut), render(InterruptedEntry(time)))
+    }
+
+    /** Offset where the file must be cut so that only whole entries remain. */
+    private fun recoveryCut(text: String): Int {
+        val base = text.substring(0, text.lastIndexOf('\n') + 1) // drop a last line that has no newline
+        if (base.isEmpty()) return 0
+        val lines = base.split("\n").dropLast(1)
+        val blocks = splitBlocks(lines, mutableListOf())
+        val assembler = Assembler()
+        blocks.forEach { assembler.feed(it) }
+        assembler.openLineNo?.let { return lineOffset(lines, it) }
+        if (!base.endsWith("\n\n")) return if (blocks.isEmpty()) 0 else lineOffset(lines, lastEntryLine(blocks))
+        return base.length
+    }
+
+    private fun lineOffset(lines: List<String>, lineNo: Int): Int = lines.take(lineNo - 1).sumOf { it.length + 1 }
+
+    /** Line where the last entry starts; a closed compression block starts at its START line. */
+    private fun lastEntryLine(blocks: List<Block>): Int {
+        val last = blocks.last()
+        if (last.tag == "COMPRESSION-END") {
+            blocks.dropLast(1).lastOrNull { it.tag == "COMPRESSION-START" }?.let { return it.lineNo }
+        }
+        return last.lineNo
+    }
+
     private fun header(tag: String, attrs: List<Pair<String, String>>): String =
         "[$tag${attrs.joinToString("") { " ${it.first}=${it.second}" }}]"
 
@@ -160,6 +196,9 @@ object SessionFormat {
         private var open: Block? = null
 
         val unfinished: Boolean get() = open != null
+
+        /** Line of a COMPRESSION-START that has no END yet, or null. */
+        val openLineNo: Int? get() = open?.lineNo
 
         fun feed(block: Block) {
             when (block.tag) {

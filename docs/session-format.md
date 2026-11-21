@@ -50,7 +50,17 @@ body lines. This makes the format reversible: no body line can be mistaken for a
 ## Writing rules
 
 1. Append each entry as one write, ending with a blank line, and flush after every entry (REQ-SES-02).
-2. On recovery of a session that does not end cleanly, append `[INTERRUPTED t=...]`.
+2. On recovery of a session that does not end cleanly, cut the file back to its last whole entry, then append
+   `[INTERRUPTED t=...]`. The file is not changed in any other way.
+   - A last line without a newline is dropped.
+   - A last entry that is not followed by its blank line is dropped.
+   - A `COMPRESSION-START` without its `COMPRESSION-END` is dropped together with its summary.
+   - The dropped text is saved in a side file by the caller; recovery never throws text away.
+   - `t` is the time of recovery when the caller knows it, otherwise the latest `t` among the kept entries.
+   - Limit: a write that was torn exactly after a blank line inside a body cannot be detected. The entry then keeps the
+     part that was written.
+   Both implementations offer this as a pure text function: `SessionFormat.recover` (Kotlin) and
+   `Recovery.from_text` (Python). They are tested against every prefix of `valid-basic.session.md`.
 
 ## Test inputs
 

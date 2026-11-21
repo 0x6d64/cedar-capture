@@ -114,4 +114,105 @@ class SessionFormatTest {
         assertTrue(result.ok)
         assertTrue(result.entries.isEmpty())
     }
+
+    @Test
+    fun tokenMakesValuesSafeForHeaders() {
+        assertEquals("a_b_c", SessionFormat.token(" a b]c "))
+        assertEquals("unknown", SessionFormat.token("   "))
+    }
+
+    @Test
+    fun invalidEntriesFixtureProblemTexts() {
+        val result = SessionFormat.parse(fixture("invalid-entries.session.md"))
+        assertEquals(
+            listOf(
+                "line 1: text before the first header",
+                "line 4: SPEECH without a valid t=HH:MM:SS",
+                "line 7: unknown tag FOO",
+            ),
+            result.problems,
+        )
+    }
+
+    private val good = "[SESSION id=s started=t format=1]\n\n[SPEECH t=00:00:05]\nhello\n\n"
+    private val openCompression = "[COMPRESSION-START t=00:01:00 model=m covers=00:00:00-00:00:59]\n"
+    private val interrupted5 = "[INTERRUPTED t=00:00:05]\n\n"
+
+    @Test
+    fun recoveryOfACleanFileOnlyAppendsTheMarker() {
+        val recovery = SessionFormat.recover(good)
+        assertEquals(good, recovery.kept)
+        assertEquals("", recovery.droppedTail)
+        assertEquals(interrupted5, recovery.appended)
+    }
+
+    @Test
+    fun recoveryOfAnEmptyFile() {
+        val recovery = SessionFormat.recover("")
+        assertEquals("", recovery.kept)
+        assertEquals("", recovery.droppedTail)
+        assertEquals("[INTERRUPTED t=00:00:00]\n\n", recovery.appended)
+    }
+
+    @Test
+    fun recoveryUsesTheGivenTime() {
+        assertEquals("[INTERRUPTED t=00:01:30]\n\n", SessionFormat.recover(good, tSeconds = 90).appended)
+    }
+
+    @Test
+    fun recoveryCutsAHalfWrittenEntryAndKeepsTheTail() {
+        val tails = listOf(
+            "[SPEECH t=00:00:09]\nhal", // body cut mid-line
+            "[SPEECH t=00:00:09]\nhalf\n", // body line complete, entry not terminated
+            "[SPEECH t=00:00:09]\n", // header only
+            "[SPEECH t=00:0", // header cut mid-line
+            "[SPEECH t=00:00:09]", // header complete but no newline
+        )
+        for (tail in tails) {
+            val recovery = SessionFormat.recover(good + tail)
+            assertEquals(good, recovery.kept, tail)
+            assertEquals(tail, recovery.droppedTail, tail)
+            assertEquals(interrupted5, recovery.appended, tail)
+        }
+    }
+
+    @Test
+    fun recoveryCutsAnOpenCompressionBlock() {
+        for (summary in listOf("summary\n", "summary\n\nmore\n", "summary\n\n")) {
+            val recovery = SessionFormat.recover(good + openCompression + summary)
+            assertEquals(good, recovery.kept, summary)
+            assertEquals(openCompression + summary, recovery.droppedTail, summary)
+        }
+    }
+
+    @Test
+    fun recoveryKeepsAClosedCompressionBlock() {
+        val closed = openCompression + "summary\n[COMPRESSION-END t=00:01:00]\n\n"
+        val recovery = SessionFormat.recover(good + closed)
+        assertEquals(good + closed, recovery.kept)
+        assertEquals("", recovery.droppedTail)
+        assertEquals("[INTERRUPTED t=00:01:00]\n\n", recovery.appended)
+    }
+
+    @Test
+    fun recoveryCountsUtf8BytesNotCharacters() {
+        val text = good + "[SPEECH t=00:00:07]\nGrüße 😀\n\n"
+        val recovery = SessionFormat.recover(text)
+        assertEquals(text, recovery.kept)
+        assertEquals(text.toByteArray(Charsets.UTF_8).size, recovery.keptUtf8Bytes)
+        assertTrue(recovery.keptUtf8Bytes > text.length)
+    }
+
+    @Test
+    fun recoveryFromEveryPrefixOfAValidFileIsValid() {
+        val text = fixture("valid-basic.session.md")
+        for (cut in 0..text.length) {
+            val prefix = text.substring(0, cut)
+            val recovery = SessionFormat.recover(prefix)
+            assertEquals(prefix, recovery.kept + recovery.droppedTail, "cut $cut")
+            val result = SessionFormat.parse(recovery.kept + recovery.appended)
+            assertTrue(result.ok, "cut $cut: ${result.problems}")
+            assertTrue(result.entries.last() is InterruptedEntry, "cut $cut")
+        }
+    }
 }
