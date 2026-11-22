@@ -15,6 +15,8 @@ All notable changes to this project are documented here. Format: Keep a Changelo
   Sources, raw numbers and caveats: `docs/pinned-versions.md` and `docs/results/RESULTS-LOG.md`.
 
 ### Added
+- App launcher icon (STEP-42): adaptive icon with themed (monochrome) layer, from the supplied asset set (placeholder colors
+  `#2B2B28`, `#F3E9D8`, `#E0A050`). Wired in `AndroidManifest.xml`; `:app:assembleDebug` builds and the APK lists the icon.
 - Pre-commit hooks (`.pre-commit-config.yaml`, revisions pinned to commit SHAs): file hygiene, ruff check and format,
   mypy, and a block on committing `data/`, `models/` or audio files.
   `fixtures/` is excluded from the whitespace fixers because it is ground truth.
