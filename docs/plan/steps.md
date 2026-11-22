@@ -49,6 +49,7 @@ must be checked first.
 | STEP-09 | Raw audio writer: chunked WAV (about 5 min per file, my proposal), header repair after a kill | A D | force-stop; files play on the desktop, at most the last seconds lost | |
 | STEP-10 | Session store on disk: append and flush per entry; interrupted marker on recovery | A D | force-stop test keeps the file valid. **Checkpoint 2** | |
 | STEP-41 | Add an `:app:assembleDebug` job to CI (Android SDK setup on the runner); runs after STEP-40 once M1 is underway | A H | green run that builds the debug APK; no job depends on the phone | |
+| STEP-42 | App launcher icon: adaptive icon (vector background, foreground, monochrome) from the supplied assets in `android/app/src/main/res/`, referenced by `android:icon` and `android:roundIcon` in the manifest. No legacy PNGs (minSdk 33). The Play Store PNG is not used (the POC is not published) | A S D | `:app:assembleDebug` succeeds and `aapt2 dump badging` lists the icon; the icon shows on the Pixel 7 launcher | build part verified; launcher check pending (phone not connected) |
 
 ## M2 Transcription
 
